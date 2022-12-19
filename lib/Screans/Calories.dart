@@ -1,9 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
+import 'package:healthreminder1/Screans/caloriesChart.dart';
+import 'package:healthreminder1/Screans/Welcome_Screan.dart';
+import 'package:healthreminder1/Screans/stepsChart.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
 import 'package:healthreminder1/fuction/UserMealsList.dart';
+import 'package:healthreminder1/fuction/changeCaloriesTarget.dart';
+import 'package:healthreminder1/fuction/notification_service.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:provider/provider.dart';
 import '../userData/Data.dart';
@@ -11,9 +18,11 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 String _scanBarcode = 'Unknown';
-var steps = 0;
+var IsCreated = true;
 
 class CaloriesSection extends StatefulWidget {
   @override
@@ -23,124 +32,406 @@ class CaloriesSection extends StatefulWidget {
 }
 
 class _CaloriesSectionState extends State<CaloriesSection> {
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
+  notification Notification = notification();
   final ref = FirebaseDatabase.instance.ref('stepsoutput');
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.teal[200],
-        body: Container(
-          padding: EdgeInsets.only(top: 50, bottom: 20),
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('CaloriesSection',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Flexible(
-                child: Container(
-                  width: 0,
-                  height: 0,
-                  child: FirebaseAnimatedList(
-                    query: ref,
-                    itemBuilder: (context, snapshot, animation, index) {
-                      steps = int.parse(snapshot.value.toString());
-                      return Text('');
-                    },
-                  ),
-                ),
-              ),
-              Container(
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    'Total Calories: ${Provider.of<Data>(context).totalCalories} \n Total steps: $steps',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                height: 80,
-                width: 250,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
-              ),
-              MealsList(),
-              SizedBox(
-                height: 50,
-              ),
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(left: 15),
-                    alignment: Alignment.centerLeft,
-                    child: RaisedButton(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Text('add calories'),
-                        onPressed: () {
-                          showModalBottomSheet(
-                              isScrollControlled: true,
-                              context: context,
-                              builder: (context) => SingleChildScrollView(
-                                  child: Container(
-                                      padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom),
-                                      child: Addcalories())));
-                        }),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 15),
-                    alignment: Alignment.centerLeft,
-                    child: RaisedButton(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: Text('add meal'),
-                      onPressed: (() {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) => Container(
-                                  child: SingleChildScrollView(
-                                      child: Container(
-                                    child: AddAmeal(),
-                                    height: 350,
-                                  )),
-                                ));
-                      }),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 15),
-                    alignment: Alignment.centerLeft,
-                    child: RaisedButton(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: Text('Scan QRCode'),
-                      onPressed: (() => scanQR()),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ));
-  }
 
   @override
   void initState() {
     super.initState();
+    Notification.initialiseNotifications();
+    getCurrentUser();
+    getDataAtFirst();
+
+    //DateTime.parse();
+  }
+
+  void updateSteps() {
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
+    docUser.update({
+      'steps': Provider.of<Data>(context, listen: false).steps,
+    });
+  }
+
+  void getDataAtFirst() async {
+    CollectionReference userref =
+        FirebaseFirestore.instance.collection('Users');
+    await userref.get().then((value) {
+      value.docs.forEach((element) {
+        if (element.get("email") ==
+            Provider.of<Data>(context, listen: false).singedInUser.email) {
+          setState(() {
+            Provider.of<Data>(context, listen: false).CaloriesChart[0].type =
+                element.get("calories");
+
+            Provider.of<Data>(context, listen: false).StepsChart[0].type =
+                element.get("steps");
+
+            Provider.of<Data>(context, listen: false).totalCalories =
+                element.get("calories");
+
+            Provider.of<Data>(context, listen: false).steps =
+                element.get("steps");
+
+            Provider.of<Data>(context, listen: false).UserMealsNames =
+                element.get("mealsName");
+
+            Provider.of<Data>(context, listen: false).UserMealsCalories =
+                element.get("mealsCalories");
+
+            Provider.of<Data>(context, listen: false).TargetCalories =
+                element.get("caloriesTarget");
+
+            Provider.of<Data>(context, listen: false).UserMealsDates =
+                element.get("dateOfTheDay");
+            // if (true) {
+            // Notification.sendNotification('this is title', 'this is body');
+            //   }
+          });
+          if (Provider.of<Data>(context, listen: false).UserMealsNames.length !=
+              Provider.of<Data>(context, listen: false).UserMeals.length) {
+            Provider.of<Data>(context, listen: false).UserMeals.clear();
+            for (var i = 0;
+                i <
+                    Provider.of<Data>(context, listen: false)
+                        .UserMealsNames
+                        .length;
+                i++) {
+              Meals meal = Meals(
+                  Provider.of<Data>(context, listen: false).UserMealsNames[i],
+                  Provider.of<Data>(context, listen: false)
+                      .UserMealsCalories[i]);
+              Provider.of<Data>(context, listen: false).UserMeals.add(meal);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  void updateUserMeals() {
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
+    docUser.update({
+      'calories': Provider.of<Data>(context, listen: false).totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
+      'mealsCalories':
+          Provider.of<Data>(context, listen: false).UserMealsCalories,
+    });
+  }
+
+  /*void checkUser() async {
+    CollectionReference userref =
+        FirebaseFirestore.instance.collection('Users');
+    userref.get().then((value) {
+      value.docs.forEach((element) {
+        if (element.get("email") ==
+            Provider.of<Data>(context, listen: false).singedInUser.email) {
+          getDataAtFirst();
+        }
+      });
+    });
+  }*/
+
+  void date() {
+    final docUser =
+        FirebaseFirestore.instance.collection('Users').doc('newOne');
+
+    final json = {
+      'email': Provider.of<Data>(context, listen: false).singedInUser.email,
+      'calories': Provider.of<Data>(context, listen: false).totalCalories,
+      'steps': Provider.of<Data>(context, listen: false).steps,
+      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
+      'mealsCalories':
+          Provider.of<Data>(context, listen: false).UserMealsCalories,
+      'dateOfTheDay': DateTime.now().subtract(Duration(days: 7)),
+    };
+
+    docUser.set(json);
+  }
+
+  void getCurrentUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        Provider.of<Data>(context, listen: false).singedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void userLogout() {
+    Provider.of<Data>(context, listen: false).UserMealsNames = [];
+    Provider.of<Data>(context, listen: false).UserMealsCalories = [];
+    Provider.of<Data>(context, listen: false).UserMeals = [];
+    Provider.of<Data>(context, listen: false).UserMealsDates = [];
+    Provider.of<Data>(context, listen: false).totalCalories = 0;
+    Provider.of<Data>(context, listen: false).steps = 0;
+    Provider.of<Data>(context, listen: false).TargetCalories = 2000;
+
+    _auth.signOut();
+    Navigator.pushNamed(context, WelcomeScrean.ScreanRoute);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.cyan[100],
+          leading: IconButton(
+              onPressed: () {
+                // date();
+              },
+              icon: Icon(Icons.arrow_back)),
+          title: Row(
+            children: [
+              Image.asset(
+                'images/HealthyreminderLogo.png',
+                height: 45,
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Text(
+                'Healthy Reminder',
+                style: TextStyle(color: Colors.black54),
+              )
+            ],
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  userLogout();
+                },
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ))
+          ],
+        ),
+        backgroundColor: Colors.teal[200],
+        body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 1.3,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(top: 25, bottom: 20),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('CaloriesSection',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 22)),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.26,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Container(
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 50,
+                            ),
+                            CaloriesChart(),
+                            SizedBox(
+                              width: 45,
+                            ),
+                            stepsChart(),
+                            SizedBox(
+                              width: 50,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                /* StreamBuilder<QuerySnapshot>(
+                  stream: _firestore.collection('Users').snapshots(),
+                  builder: (context, snapshot) {
+                    var flag = true;
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasData) {
+                      final users = snapshot.data!.docs;
+
+                      for (var user in users) {
+                        final usersteps = user.get('steps');
+                        final email = user.get('email');
+                        final calories = user.get('calories');
+                        if (email ==
+                            Provider.of<Data>(context, listen: false)
+                                .singedInUser
+                                .email) {
+                          // Notification.sendNotification(
+                          //   'this is title', 'this is body');
+                        }
+                      }
+                    }
+
+                    return Container(
+                      width: 0,
+                      height: 0,
+                    );
+                  },
+                ),*/
+
+                /*Container(
+                  height: 300,
+                  width: 400,
+                  child: SfCartesianChart(
+                    series: <RadialBarSeries>[
+                      PieSeries<GDPData, String>(
+                          dataSource: _chartData,
+                          xValueMapper: (GDPData data, _) => data.c,
+                          yValueMapper: (GDPData data, _) => data.a)
+                    ],
+                  ),
+                ),*/
+                Flexible(
+                  child: Container(
+                    width: 0,
+                    height: 0,
+                    child: FirebaseAnimatedList(
+                      query: ref,
+                      itemBuilder: (context, snapshot, animation, index) {
+                        Provider.of<Data>(context).updateSteps(snapshot.value);
+                        updateSteps();
+
+                        return Text('');
+                      },
+                    ),
+                  ),
+                ),
+                /*Container(
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'Total Calories: ${Provider.of<Data>(context).totalCalories} \n Total steps: ${Provider.of<Data>(context, listen: false).steps} \n Calories Target: ${Provider.of<Data>(context, listen: false).TargetCalories}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  height: 100,
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                ),*/
+                MealsList(),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 15),
+                      alignment: Alignment.centerLeft,
+                      child: RaisedButton(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12))),
+                          child: Text('add calories'),
+                          onPressed: () {
+                            showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => SingleChildScrollView(
+                                    child: Container(
+                                        padding: EdgeInsets.only(
+                                            bottom: MediaQuery.of(context)
+                                                .viewInsets
+                                                .bottom),
+                                        child: Addcalories())));
+                          }),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 15),
+                      alignment: Alignment.centerLeft,
+                      child: RaisedButton(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
+                        child: Text('add meal'),
+                        onPressed: (() {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) => Container(
+                                    child: SingleChildScrollView(
+                                        child: Container(
+                                      child: AddAmeal(),
+                                      height: 350,
+                                    )),
+                                  ));
+                        }),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 15),
+                      alignment: Alignment.centerLeft,
+                      child: RaisedButton(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
+                        child: Text('Scan QRCode'),
+                        onPressed: (() {
+                          scanQR();
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 15),
+                  alignment: Alignment.centerLeft,
+                  child: RaisedButton(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12))),
+                      child: Text('Change Calories Target'),
+                      onPressed: () {
+                        showModalBottomSheet(
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) => SingleChildScrollView(
+                                child: Container(
+                                    padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom),
+                                    child: ChangeCaloriesTarget())));
+                      }),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   Future<void> scanQR() async {
@@ -164,5 +455,8 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     Meals newMeal = new Meals(Value[0], int.parse(Value[1]));
     Provider.of<Data>(context, listen: false).addUserMealsList(newMeal);
     Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
+    Provider.of<Data>(context, listen: false)
+        .addDates(DateTime.now().toString());
+    updateUserMeals();
   }
 }
