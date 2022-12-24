@@ -63,11 +63,6 @@ class ChatSuggetion extends State<MyWidget> {
             ),
             Container(
               child: ListTile(
-                leading: IconButton(
-                  iconSize: 35,
-                  icon: Icon(Icons.camera_alt),
-                  onPressed: () {},
-                ),
                 title: Container(
                   height: 35,
                   decoration: BoxDecoration(
