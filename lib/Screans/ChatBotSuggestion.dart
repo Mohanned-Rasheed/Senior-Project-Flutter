@@ -3,6 +3,9 @@ import 'package:dialogflow_flutter/dialogflowFlutter.dart';
 import 'package:dialogflow_flutter/googleAuth.dart';
 import 'package:dialogflow_flutter/language.dart';
 import 'package:flutter/material.dart';
+import 'package:healthreminder1/models/Meals.dart';
+import 'package:healthreminder1/userData/Data.dart';
+import 'package:provider/provider.dart';
 
 class MyWidget extends StatefulWidget {
   const MyWidget({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class MyWidget extends StatefulWidget {
 }
 
 class ChatSuggetion extends State<MyWidget> {
+  static const String ScreanRoute = 'ChatSuggetion';
   var messageCon = TextEditingController();
   List<Map> messages = [];
 
@@ -22,14 +26,27 @@ class ChatSuggetion extends State<MyWidget> {
     DialogFlow dialogFlow =
         DialogFlow(authGoogle: authGoogle, language: Language.english);
     AIResponse aiResponse = await dialogFlow.detectIntent(query);
-
-    messages.insert(0, {
-      "data": 0,
-      "messages": aiResponse.getListMessage()![0]["text"]["text"][0].toString()
+    setState(() {
+      messages.insert(0, {
+        "data": 0,
+        "messages":
+            aiResponse.getListMessage()![0]["text"]["text"][0].toString()
+      });
     });
-    print(aiResponse.getListMessage()![0]["text"]["text"][0].toString());
-    print(messages[0]["message"].toString());
-    print(messages[0]["data"]);
+
+    if (aiResponse.getListMessage()![0]["text"]["text"][0].toString() ==
+        "ok write yes to continue") {
+      Meals m = Meals('name', 200);
+
+      Provider.of<Data>(context, listen: false).addUserMealsList(m);
+      Provider.of<Data>(context, listen: false)
+          .addDates(DateTime.now().toString());
+      Provider.of<Data>(context, listen: false).updateUser();
+      print("bro please ");
+    }
+    // print(aiResponse.getListMessage()![0]["text"]["text"][0].toString());
+    //print(messages[0]["message"].toString());
+    //print(messages[0]["data"]);
   }
 
   @override
@@ -45,17 +62,17 @@ class ChatSuggetion extends State<MyWidget> {
               child: Container(
                 padding: EdgeInsets.only(top: 15, bottom: 10),
                 child: Text(
-                  "Today,  ",
+                  "  ",
                   style: TextStyle(fontSize: 20),
                 ),
               ),
             ),
             Flexible(
                 child: ListView.builder(
-                    itemCount: 0,
+                    itemCount: messages.length,
                     reverse: true,
                     itemBuilder: (context, index) => chat(
-                        messages[index]["message"].toString(),
+                        messages[index]["messages"].toString(),
                         messages[index]["data"]))),
             Divider(
               height: 5,
@@ -95,10 +112,9 @@ class ChatSuggetion extends State<MyWidget> {
                     if (messageCon.text.isEmpty) {
                       print("contrller emtay");
                     } else {
-                      setState(() {
-                        messages
-                            .insert(0, {"data": 1, "message": messageCon.text});
-                      });
+                      messages
+                          .insert(0, {"data": 1, "messages": messageCon.text});
+
                       response(messageCon.text);
                       messageCon.clear();
                     }
@@ -127,7 +143,7 @@ class ChatSuggetion extends State<MyWidget> {
             padding: EdgeInsets.all(10),
             child: Bubble(
               radius: Radius.circular(15),
-              color: data == 0 ? Colors.blue : Colors.green,
+              color: data == 0 ? Colors.grey : Colors.green,
               elevation: 0,
               child: Padding(
                 padding: EdgeInsets.all(2),
@@ -143,7 +159,7 @@ class ChatSuggetion extends State<MyWidget> {
                         child: Text(
                           message,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                       ),
                     )
@@ -152,15 +168,6 @@ class ChatSuggetion extends State<MyWidget> {
               ),
             ),
           ),
-          data == 0
-              ? Container(
-                  height: 60,
-                  width: 60,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.amber,
-                  ),
-                )
-              : Container()
         ],
       ),
     );

@@ -81,4 +81,15 @@ class Data extends ChangeNotifier {
     UserMealsDates.remove(date);
     notifyListeners();
   }
+
+  void updateUser() {
+    final docUser =
+        FirebaseFirestore.instance.collection('Users').doc(singedInUser.email);
+    docUser.update({
+      'calories': totalCalories,
+      'mealsName': UserMealsNames,
+      'mealsCalories': UserMealsCalories,
+      'dateOfTheDay': UserMealsDates,
+    });
+  }
 }

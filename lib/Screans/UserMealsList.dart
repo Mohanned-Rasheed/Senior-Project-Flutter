@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
 import 'package:healthreminder1/models/Meals.dart';
@@ -45,6 +46,42 @@ class UserMealsList extends State<MealsList> {
         ),
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, ChatSuggetion.ScreanRoute);
+                  },
+                  child: Text("ChatBot"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: Container(
+                    child: DropdownButton<String>(
+                      value: selectedItem,
+                      items: itemList
+                          .map((item) => DropdownMenuItem<String>(
+                              value: item, child: Text(item)))
+                          .toList(),
+                      onChanged: (item) => setState(() {
+                        selectedItem = item!;
+                        if (selectedItem == 'today') {
+                          Provider.of<Data>(context, listen: false).ListDate =
+                              DateTime.now();
+                        } else if (selectedItem == 'last 3 days') {
+                          Provider.of<Data>(context, listen: false).ListDate =
+                              DateTime.now().subtract(Duration(days: 3));
+                        } else if (selectedItem == 'last week') {
+                          Provider.of<Data>(context, listen: false).ListDate =
+                              DateTime.now().subtract(Duration(days: 7));
+                        }
+                      }),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Row(
               children: [
                 Container(
@@ -109,28 +146,6 @@ class UserMealsList extends State<MealsList> {
                   ),
                 ),
               ],
-            ),
-            Container(
-              child: DropdownButton<String>(
-                value: selectedItem,
-                items: itemList
-                    .map((item) => DropdownMenuItem<String>(
-                        value: item, child: Text(item)))
-                    .toList(),
-                onChanged: (item) => setState(() {
-                  selectedItem = item!;
-                  if (selectedItem == 'today') {
-                    Provider.of<Data>(context, listen: false).ListDate =
-                        DateTime.now();
-                  } else if (selectedItem == 'last 3 days') {
-                    Provider.of<Data>(context, listen: false).ListDate =
-                        DateTime.now().subtract(Duration(days: 3));
-                  } else if (selectedItem == 'last week') {
-                    Provider.of<Data>(context, listen: false).ListDate =
-                        DateTime.now().subtract(Duration(days: 7));
-                  }
-                }),
-              ),
             ),
             Flexible(
               child: ListView.builder(
