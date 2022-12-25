@@ -26,8 +26,7 @@ class _ChartState extends State<stepsChart> {
           color: Colors.teal[100]),
       child: SfCircularChart(
         title: ChartTitle(
-            text:
-                'Target Calories ${Provider.of<Data>(context).TargetCalories}'),
+            text: 'Target Steps ${Provider.of<Data>(context).TargetCalories}'),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
         margin: EdgeInsets.all(0),

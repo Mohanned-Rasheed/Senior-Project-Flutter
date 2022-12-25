@@ -20,6 +20,31 @@ class UserMealsList extends State<MealsList> {
   List<String> itemList = ['today', 'last 3 days', 'last week'];
   String selectedItem = 'today';
 
+  void ChartKepUpDate() async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    int tempTotalCalories = 0;
+    for (var i = 0;
+        i < Provider.of<Data>(context, listen: false).UserMealsCalories.length;
+        i++) {
+      if (Provider.of<Data>(context, listen: false).ListDate.day <=
+          DateTime.parse(
+                  Provider.of<Data>(context, listen: false).UserMealsDates[i])
+              .day) {
+        tempTotalCalories = tempTotalCalories +
+                Provider.of<Data>(context, listen: false).UserMealsCalories[i]
+            as int;
+      }
+    }
+
+    Provider.of<Data>(context, listen: false).newCaloChart(tempTotalCalories);
+  }
+
+  @override
+  void initState() {
+    ChartKepUpDate();
+  }
+
   @override
   Widget build(BuildContext context) {
     void updateUser() {
@@ -67,14 +92,52 @@ class UserMealsList extends State<MealsList> {
                       onChanged: (item) => setState(() {
                         selectedItem = item!;
                         if (selectedItem == 'today') {
-                          Provider.of<Data>(context, listen: false).ListDate =
-                              DateTime.now();
+                          Provider.of<Data>(context, listen: false)
+                              .changeListDate(DateTime.now());
+
+                          ChartKepUpDate();
+                          Provider.of<Data>(context, listen: false)
+                              .dayTargetCaloriesMultiplyer = 1;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCalories =
+                              Provider.of<Data>(context, listen: false)
+                                  .TargetCalories;
+
+                          Provider.of<Data>(context, listen: false)
+                              .dayTargetCaloriesMultiplyer = 1;
                         } else if (selectedItem == 'last 3 days') {
-                          Provider.of<Data>(context, listen: false).ListDate =
-                              DateTime.now().subtract(Duration(days: 3));
+                          Provider.of<Data>(context, listen: false)
+                              .changeListDate(
+                                  DateTime.now().subtract(Duration(days: 3)));
+
+                          ChartKepUpDate();
+
+                          Provider.of<Data>(context, listen: false)
+                              .dayTargetCaloriesMultiplyer = 3;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCalories =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetCalories *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetCaloriesMultiplyer;
                         } else if (selectedItem == 'last week') {
-                          Provider.of<Data>(context, listen: false).ListDate =
-                              DateTime.now().subtract(Duration(days: 7));
+                          Provider.of<Data>(context, listen: false)
+                              .changeListDate(
+                                  DateTime.now().subtract(Duration(days: 3)));
+
+                          ChartKepUpDate();
+
+                          Provider.of<Data>(context, listen: false)
+                              .dayTargetCaloriesMultiplyer = 7;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCalories =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetCalories *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetCaloriesMultiplyer;
                         }
                       }),
                     ),

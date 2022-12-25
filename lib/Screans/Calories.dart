@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fling_pickle/fling_pickle.dart';
+import 'package:http/http.dart' as http;
 
 String _scanBarcode = 'Unknown';
 var IsCreated = true;
@@ -33,6 +36,20 @@ class CaloriesSection extends StatefulWidget {
 }
 
 class _CaloriesSectionState extends State<CaloriesSection> {
+  String name = '';
+  String final_respnes = '';
+  final _formkey = GlobalKey<FormState>();
+
+  Future<void> _savingData() async {
+    final vladiation = _formkey.currentState?.validate();
+
+    if (!vladiation!) {
+      return;
+    }
+
+    _formkey.currentState?.save();
+  }
+
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   notification Notification = notification();
@@ -223,6 +240,17 @@ class _CaloriesSectionState extends State<CaloriesSection> {
             padding: EdgeInsets.only(top: 25, bottom: 20),
             child: Column(
               children: <Widget>[
+                // RaisedButton(
+                //   onPressed: () async {
+                //     _savingData();
+
+                //     Uri url = Uri.base;
+
+                //     final response =
+                //         await http.post(url, body: json.encode({'name': name}));
+                //   },
+                //   key: _formkey,
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

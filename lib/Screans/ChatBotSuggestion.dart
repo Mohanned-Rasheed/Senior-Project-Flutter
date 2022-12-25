@@ -34,16 +34,14 @@ class ChatSuggetion extends State<MyWidget> {
       });
     });
 
-    if (aiResponse.getListMessage()![0]["text"]["text"][0].toString() ==
-        "ok write yes to continue") {
-      Meals m = Meals('name', 200);
+    Meals m = Meals('name', 200);
+    Provider.of<Data>(context, listen: false).addcalo(m.calories);
+    Provider.of<Data>(context, listen: false).addUserMealsList(m);
+    Provider.of<Data>(context, listen: false)
+        .addDates(DateTime.now().toString());
+    Provider.of<Data>(context, listen: false).updateUser();
+    print("bro please ");
 
-      Provider.of<Data>(context, listen: false).addUserMealsList(m);
-      Provider.of<Data>(context, listen: false)
-          .addDates(DateTime.now().toString());
-      Provider.of<Data>(context, listen: false).updateUser();
-      print("bro please ");
-    }
     // print(aiResponse.getListMessage()![0]["text"]["text"][0].toString());
     //print(messages[0]["message"].toString());
     //print(messages[0]["data"]);

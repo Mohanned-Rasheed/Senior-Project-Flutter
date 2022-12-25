@@ -57,6 +57,15 @@ class _AddAmealState extends State<AddAmeal> {
                     Provider.of<Data>(context, listen: false)
                         .addDates(DateTime.now().toString());
                     updateUserMeals();
+                    // showModalBottomSheet(
+                    //     context: context,
+                    //     builder: (context) => Container(
+                    //           child: SingleChildScrollView(
+                    //               child: Container(
+                    //             child: AddAmeal(),
+                    //             height: 350,
+                    //           )),
+                    //         ));
                   }),
                   child: Text('Add'),
                 ),

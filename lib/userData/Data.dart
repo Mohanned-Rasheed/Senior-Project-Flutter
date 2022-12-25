@@ -6,10 +6,18 @@ import 'package:healthreminder1/models/chartData.dart';
 
 class Data extends ChangeNotifier {
   int totalCalories = 0;
+  late User singedInUser;
+  dynamic steps = 0;
+  var TargetCalories = 2000;
+  var chartTargetCalories =
+      2000; //this used to present the calories in the chart and seoritae the acculy target to mange target in diffrent form
+  int dayTargetCaloriesMultiplyer =
+      1; //this is used to change target calories in the chart dynmic when the user change the days in the list it changes to the day its selected
   List<dynamic> UserMealsDates = [];
   List<dynamic> UserMealsNames = [];
   List<dynamic> UserMealsCalories = [];
   List<Meals> UserMeals = [];
+
   DateTime ListDate = DateTime.now();
   List<chartData> CaloriesChart = [
     chartData('totalCalories', 0),
@@ -17,9 +25,6 @@ class Data extends ChangeNotifier {
   List<chartData> StepsChart = [
     chartData('steps', 0),
   ];
-  late User singedInUser;
-  dynamic steps = 0;
-  var TargetCalories = 2000;
 
   List<Meals> meals = [
     Meals('chiken', 300),
@@ -34,6 +39,11 @@ class Data extends ChangeNotifier {
   void addcalo(int newcal) {
     totalCalories = totalCalories + newcal;
     CaloriesChart[0].type = totalCalories;
+    notifyListeners();
+  }
+
+  void newCaloChart(int newCaloChart) {
+    CaloriesChart[0].type = newCaloChart;
     notifyListeners();
   }
 
@@ -69,6 +79,7 @@ class Data extends ChangeNotifier {
 
   void updateCaloTarget(var newTarget) {
     TargetCalories = newTarget;
+    chartTargetCalories = TargetCalories * dayTargetCaloriesMultiplyer;
     notifyListeners();
   }
 
@@ -91,5 +102,15 @@ class Data extends ChangeNotifier {
       'mealsCalories': UserMealsCalories,
       'dateOfTheDay': UserMealsDates,
     });
+  }
+
+  void caloriesChartDate() {
+    CaloriesChart[0].type = 0;
+    notifyListeners();
+  }
+
+  void changeListDate(DateTime newListDate) {
+    ListDate = newListDate;
+    notifyListeners();
   }
 }

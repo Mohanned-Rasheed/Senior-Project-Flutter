@@ -42,6 +42,7 @@ dependencies:
   fling_pickle: ^0.4.2
   syncfusion_flutter_charts: ^20.3.61
   provider: ^6.0.4
+  http: ^0.13.5
   flutter_barcode_scanner: ^2.0.0
 
   bubble:
