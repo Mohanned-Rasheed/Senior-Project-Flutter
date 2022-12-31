@@ -5,6 +5,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
+import 'package:healthreminder1/fuction/ChangeCaloriesTarget.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:provider/provider.dart';
 import '../userData/Data.dart';
@@ -19,31 +20,6 @@ class MealsList extends StatefulWidget {
 class UserMealsList extends State<MealsList> {
   List<String> itemList = ['today', 'last 3 days', 'last week'];
   String selectedItem = 'today';
-
-  void ChartKepUpDate() async {
-    await Future.delayed(Duration(milliseconds: 500));
-
-    int tempTotalCalories = 0;
-    for (var i = 0;
-        i < Provider.of<Data>(context, listen: false).UserMealsCalories.length;
-        i++) {
-      if (Provider.of<Data>(context, listen: false).ListDate.day <=
-          DateTime.parse(
-                  Provider.of<Data>(context, listen: false).UserMealsDates[i])
-              .day) {
-        tempTotalCalories = tempTotalCalories +
-                Provider.of<Data>(context, listen: false).UserMealsCalories[i]
-            as int;
-      }
-    }
-
-    Provider.of<Data>(context, listen: false).newCaloChart(tempTotalCalories);
-  }
-
-  @override
-  void initState() {
-    ChartKepUpDate();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,11 +50,270 @@ class UserMealsList extends State<MealsList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                RaisedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, ChatSuggetion.ScreanRoute);
-                  },
-                  child: Text("ChatBot"),
+                // RaisedButton(
+                //   onPressed: () {
+                //     Navigator.pushNamed(context, ChatSuggetion.ScreanRoute);
+                //   },
+                //   child: Text("ChatBot"),
+                // ),
+                GestureDetector(
+                  child: Icon(Icons.add_circle),
+                  onTap: () => showModalBottomSheet(
+                    backgroundColor: Colors.teal[100],
+                    context: context,
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => Container(
+                                        child: SingleChildScrollView(
+                                            child: Container(
+                                          child: AddAmeal(),
+                                          height: 350,
+                                        )),
+                                      ));
+                            },
+                            child: SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.amber,
+                                      elevation: 4,
+                                      margin: EdgeInsets.only(
+                                          top: 8,
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 8),
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 13.0),
+                                          child: Container(
+                                            child: Text(
+                                              "Add Meal",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                          ),
+                                        ),
+                                        subtitle: Container(
+                                          child: Text(''),
+                                        ),
+                                        trailing: Container(
+                                          child: Text(''),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => Container(
+                                        child: SingleChildScrollView(
+                                            child: Container(
+                                          child: Addcalories(),
+                                          height: 350,
+                                        )),
+                                      ));
+                            },
+                            child: SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.amber,
+                                      elevation: 4,
+                                      margin: EdgeInsets.only(
+                                          top: 8,
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 8),
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 13.0),
+                                          child: Container(
+                                            child: Text(
+                                              "Add Calories",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                          ),
+                                        ),
+                                        subtitle: Container(
+                                          child: Text(''),
+                                        ),
+                                        trailing: Container(
+                                          child: Text(''),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              scanQR();
+                            },
+                            child: SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.amber,
+                                      elevation: 4,
+                                      margin: EdgeInsets.only(
+                                          top: 8,
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 8),
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 13.0),
+                                          child: Container(
+                                            child: Text(
+                                              "ScanQrCode",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                          ),
+                                        ),
+                                        subtitle: Container(
+                                          child: Text(''),
+                                        ),
+                                        trailing: Container(
+                                          child: Text(''),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(
+                                  context, ChatSuggetion.ScreanRoute);
+                            },
+                            child: SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.amber,
+                                      elevation: 4,
+                                      margin: EdgeInsets.only(
+                                          top: 8,
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 8),
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 13.0),
+                                          child: Container(
+                                            child: Text(
+                                              "ChatBotSuggetion",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                          ),
+                                        ),
+                                        subtitle: Container(
+                                          child: Text(''),
+                                        ),
+                                        trailing: Container(
+                                          child: Text(''),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) => SingleChildScrollView(
+                                      child: Container(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                  .viewInsets
+                                                  .bottom),
+                                          child: ChangeCaloriesTarget())));
+                            },
+                            child: SingleChildScrollView(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.amber,
+                                      elevation: 4,
+                                      margin: EdgeInsets.only(
+                                          top: 8,
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 8),
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 13.0),
+                                          child: Container(
+                                            child: Text(
+                                              "Change Calories Target",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                          ),
+                                        ),
+                                        subtitle: Container(
+                                          child: Text(''),
+                                        ),
+                                        trailing: Container(
+                                          child: Text(''),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 15),
@@ -95,7 +330,8 @@ class UserMealsList extends State<MealsList> {
                           Provider.of<Data>(context, listen: false)
                               .changeListDate(DateTime.now());
 
-                          ChartKepUpDate();
+                          Provider.of<Data>(context, listen: false)
+                              .ChartKepUpDate();
                           Provider.of<Data>(context, listen: false)
                               .dayTargetCaloriesMultiplyer = 1;
 
@@ -111,7 +347,8 @@ class UserMealsList extends State<MealsList> {
                               .changeListDate(
                                   DateTime.now().subtract(Duration(days: 3)));
 
-                          ChartKepUpDate();
+                          Provider.of<Data>(context, listen: false)
+                              .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
                               .dayTargetCaloriesMultiplyer = 3;
@@ -127,7 +364,8 @@ class UserMealsList extends State<MealsList> {
                               .changeListDate(
                                   DateTime.now().subtract(Duration(days: 3)));
 
-                          ChartKepUpDate();
+                          Provider.of<Data>(context, listen: false)
+                              .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
                               .dayTargetCaloriesMultiplyer = 7;
@@ -147,67 +385,67 @@ class UserMealsList extends State<MealsList> {
             ),
             Row(
               children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  width: MediaQuery.of(context).size.width * 0.32,
-                  padding: EdgeInsets.only(left: 10),
-                  alignment: Alignment.centerLeft,
-                  child: RaisedButton(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: Text('add calories'),
-                      onPressed: () {
-                        showModalBottomSheet(
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (context) => SingleChildScrollView(
-                                child: Container(
-                                    padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom),
-                                    child: Addcalories())));
-                      }),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  width: MediaQuery.of(context).size.width * 0.28,
-                  padding: EdgeInsets.only(left: 10),
-                  alignment: Alignment.centerLeft,
-                  child: RaisedButton(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12))),
-                    child: Text('add meal'),
-                    onPressed: (() {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (context) => Container(
-                                child: SingleChildScrollView(
-                                    child: Container(
-                                  child: AddAmeal(),
-                                  height: 350,
-                                )),
-                              ));
-                    }),
-                  ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  width: MediaQuery.of(context).size.width * 0.34,
-                  padding: EdgeInsets.only(left: 5),
-                  alignment: Alignment.centerLeft,
-                  child: RaisedButton(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12))),
-                    child: Text('Scan QRCode'),
-                    onPressed: (() {
-                      scanQR();
-                    }),
-                  ),
-                ),
+                // Container(
+                //   height: MediaQuery.of(context).size.height * 0.07,
+                //   width: MediaQuery.of(context).size.width * 0.32,
+                //   padding: EdgeInsets.only(left: 10),
+                //   alignment: Alignment.centerLeft,
+                //   child: RaisedButton(
+                //       elevation: 4,
+                //       shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.all(Radius.circular(12))),
+                //       child: Text('add calories'),
+                //       onPressed: () {
+                //         showModalBottomSheet(
+                //             isScrollControlled: true,
+                //             context: context,
+                //             builder: (context) => SingleChildScrollView(
+                //                 child: Container(
+                //                     padding: EdgeInsets.only(
+                //                         bottom: MediaQuery.of(context)
+                //                             .viewInsets
+                //                             .bottom),
+                //                     child: Addcalories())));
+                //       }),
+                // ),
+                // Container(
+                //   height: MediaQuery.of(context).size.height * 0.07,
+                //   width: MediaQuery.of(context).size.width * 0.28,
+                //   padding: EdgeInsets.only(left: 10),
+                //   alignment: Alignment.centerLeft,
+                //   child: RaisedButton(
+                //     elevation: 4,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(12))),
+                //     child: Text('add meal'),
+                //     onPressed: (() {
+                //       showModalBottomSheet(
+                //           context: context,
+                //           builder: (context) => Container(
+                //                 child: SingleChildScrollView(
+                //                     child: Container(
+                //                   child: AddAmeal(),
+                //                   height: 350,
+                //                 )),
+                //               ));
+                //     }),
+                //   ),
+                // ),
+                // Container(
+                //   height: MediaQuery.of(context).size.height * 0.07,
+                //   width: MediaQuery.of(context).size.width * 0.34,
+                //   padding: EdgeInsets.only(left: 5),
+                //   alignment: Alignment.centerLeft,
+                //   child: RaisedButton(
+                //     elevation: 4,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(12))),
+                //     child: Text('Scan QRCode'),
+                //     onPressed: (() {
+                //       scanQR();
+                //     }),
+                //   ),
+                // ),
               ],
             ),
             Flexible(
@@ -252,6 +490,8 @@ class UserMealsList extends State<MealsList> {
                                       .deleteDate(Provider.of<Data>(context,
                                               listen: false)
                                           .UserMealsDates[index]);
+                                  Provider.of<Data>(context, listen: false)
+                                      .ChartKepUpDate();
                                   updateUser();
                                 }),
                               ),
@@ -287,6 +527,7 @@ class UserMealsList extends State<MealsList> {
     Meals newMeal = new Meals(Value[0], int.parse(Value[1]));
     Provider.of<Data>(context, listen: false).addUserMealsList(newMeal);
     Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
+    Provider.of<Data>(context).ChartKepUpDate();
     updateUserMeals();
   }
 

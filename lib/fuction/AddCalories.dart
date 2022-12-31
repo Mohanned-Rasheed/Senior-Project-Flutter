@@ -63,6 +63,7 @@ class _AddcaloriesState extends State<Addcalories> {
                     .addcalo(addedcalories);
                 Provider.of<Data>(context, listen: false)
                     .addDates(DateTime.now().toString());
+                Provider.of<Data>(context, listen: false).ChartKepUpDate();
                 updateUserMeals();
               } catch (e) {
                 print(e);

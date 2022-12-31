@@ -6,6 +6,8 @@ import 'package:healthreminder1/models/chartData.dart';
 
 class Data extends ChangeNotifier {
   int totalCalories = 0;
+  double Weight = 0;
+  double Height = 0;
   late User singedInUser;
   dynamic steps = 0;
   var TargetCalories = 2000;
@@ -38,7 +40,6 @@ class Data extends ChangeNotifier {
   ];
   void addcalo(int newcal) {
     totalCalories = totalCalories + newcal;
-    CaloriesChart[0].type = totalCalories;
     notifyListeners();
   }
 
@@ -112,5 +113,29 @@ class Data extends ChangeNotifier {
   void changeListDate(DateTime newListDate) {
     ListDate = newListDate;
     notifyListeners();
+  }
+
+  void ChartKepUpDateAtFirst() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+
+    int tempTotalCalories = 0;
+    for (var i = 0; i < UserMealsCalories.length; i++) {
+      if (ListDate.day <= DateTime.parse(UserMealsDates[i]).day) {
+        tempTotalCalories = tempTotalCalories + UserMealsCalories[i] as int;
+      }
+    }
+
+    newCaloChart(tempTotalCalories);
+  }
+
+  void ChartKepUpDate() {
+    int tempTotalCalories = 0;
+    for (var i = 0; i < UserMealsCalories.length; i++) {
+      if (ListDate.day <= DateTime.parse(UserMealsDates[i]).day) {
+        tempTotalCalories = tempTotalCalories + UserMealsCalories[i] as int;
+      }
+    }
+
+    newCaloChart(tempTotalCalories);
   }
 }

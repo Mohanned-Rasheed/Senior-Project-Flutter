@@ -56,6 +56,7 @@ class _AddAmealState extends State<AddAmeal> {
                         Provider.of<Data>(context, listen: false).meals[index]);
                     Provider.of<Data>(context, listen: false)
                         .addDates(DateTime.now().toString());
+                    Provider.of<Data>(context, listen: false).ChartKepUpDate();
                     updateUserMeals();
                     // showModalBottomSheet(
                     //     context: context,

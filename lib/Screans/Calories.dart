@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:healthreminder1/Screans/stepsChart.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
 import 'package:healthreminder1/Screans/UserMealsList.dart';
+import 'package:healthreminder1/fuction/MealsCSV.dart';
 import 'package:healthreminder1/fuction/changeCaloriesTarget.dart';
 import 'package:healthreminder1/fuction/notification_service.dart';
 import 'package:healthreminder1/models/Meals.dart';
@@ -54,6 +54,14 @@ class _CaloriesSectionState extends State<CaloriesSection> {
   final _firestore = FirebaseFirestore.instance;
   notification Notification = notification();
   final ref = FirebaseDatabase.instance.ref('stepsoutput');
+
+  // void getCC() {
+  //   for (var i = 0; i < MealsCSV().getCsv().length; i++) {
+  //     Provider.of<Data>(context).UserMeals[i] = Meals(MealsCSV().getCsv().);
+  //   }
+  //   Provider.of<Data>(context).UserMeals =
+  //       MealsCSV().getCsv().length as List<Meals>;
+  // }
 
   @override
   void initState() {
@@ -105,6 +113,8 @@ class _CaloriesSectionState extends State<CaloriesSection> {
 
             Provider.of<Data>(context, listen: false).UserMealsDates =
                 element.get("dateOfTheDay");
+            Provider.of<Data>(context, listen: false).chartTargetCalories =
+                element.get('caloriesTarget');
             // if (true) {
             // Notification.sendNotification('this is title', 'this is body');
             //   }
@@ -128,6 +138,7 @@ class _CaloriesSectionState extends State<CaloriesSection> {
         }
       });
     });
+    Provider.of<Data>(context, listen: false).ChartKepUpDateAtFirst();
   }
 
   void updateUserMeals() {
@@ -155,22 +166,22 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     });
   }*/
 
-  void date() {
-    final docUser =
-        FirebaseFirestore.instance.collection('Users').doc('newOne');
+  // void date() {
+  //   final docUser =
+  //       FirebaseFirestore.instance.collection('Users').doc('newOne');
 
-    final json = {
-      'email': Provider.of<Data>(context, listen: false).singedInUser.email,
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'steps': Provider.of<Data>(context, listen: false).steps,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
-      'dateOfTheDay': DateTime.now().subtract(Duration(days: 7)),
-    };
+  //   final json = {
+  //     'email': Provider.of<Data>(context, listen: false).singedInUser.email,
+  //     'calories': Provider.of<Data>(context, listen: false).totalCalories,
+  //     'steps': Provider.of<Data>(context, listen: false).steps,
+  //     'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
+  //     'mealsCalories':
+  //         Provider.of<Data>(context, listen: false).UserMealsCalories,
+  //     'dateOfTheDay': DateTime.now().subtract(Duration(days: 7)),
+  //   };
 
-    docUser.set(json);
-  }
+  //   docUser.set(json);
+  // }
 
   void getCurrentUser() {
     try {
@@ -373,90 +384,90 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                 ),
                 Row(
                   children: [
-                    Container(
-                      padding: EdgeInsets.only(left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: RaisedButton(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12))),
-                          child: Text('add calories'),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (context) => SingleChildScrollView(
-                                    child: Container(
-                                        padding: EdgeInsets.only(
-                                            bottom: MediaQuery.of(context)
-                                                .viewInsets
-                                                .bottom),
-                                        child: Addcalories())));
-                          }),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: RaisedButton(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Text('add meal'),
-                        onPressed: (() {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) => Container(
-                                    child: SingleChildScrollView(
-                                        child: Container(
-                                      child: AddAmeal(),
-                                      height: 350,
-                                    )),
-                                  ));
-                        }),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: RaisedButton(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Text('Scan QRCode'),
-                        onPressed: (() {
-                          scanQR();
-                        }),
-                      ),
-                    ),
+                    // Container(
+                    //   padding: EdgeInsets.only(left: 15),
+                    //   alignment: Alignment.centerLeft,
+                    //   child: RaisedButton(
+                    //       elevation: 4,
+                    //       shape: RoundedRectangleBorder(
+                    //           borderRadius:
+                    //               BorderRadius.all(Radius.circular(12))),
+                    //       child: Text('add calories'),
+                    //       onPressed: () {
+                    //         showModalBottomSheet(
+                    //             isScrollControlled: true,
+                    //             context: context,
+                    //             builder: (context) => SingleChildScrollView(
+                    //                 child: Container(
+                    //                     padding: EdgeInsets.only(
+                    //                         bottom: MediaQuery.of(context)
+                    //                             .viewInsets
+                    //                             .bottom),
+                    //                     child: Addcalories())));
+                    //       }),
+                    // ),
+                    // Container(
+                    //   padding: EdgeInsets.only(left: 15),
+                    //   alignment: Alignment.centerLeft,
+                    //   child: RaisedButton(
+                    //     elevation: 4,
+                    //     shape: RoundedRectangleBorder(
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(12))),
+                    //     child: Text('add meal'),
+                    //     onPressed: (() {
+                    //       showModalBottomSheet(
+                    //           context: context,
+                    //           builder: (context) => Container(
+                    //                 child: SingleChildScrollView(
+                    //                     child: Container(
+                    //                   child: AddAmeal(),
+                    //                   height: 350,
+                    //                 )),
+                    //               ));
+                    //     }),
+                    //   ),
+                    // ),
+                    // Container(
+                    //   padding: EdgeInsets.only(left: 15),
+                    //   alignment: Alignment.centerLeft,
+                    //   child: RaisedButton(
+                    //     elevation: 4,
+                    //     shape: RoundedRectangleBorder(
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(12))),
+                    //     child: Text('Scan QRCode'),
+                    //     onPressed: (() {
+                    //       scanQR();
+                    //     }),
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(
                   height: 5,
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 15),
-                  alignment: Alignment.centerLeft,
-                  child: RaisedButton(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: Text('Change Calories Target'),
-                      onPressed: () {
-                        showModalBottomSheet(
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (context) => SingleChildScrollView(
-                                child: Container(
-                                    padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom),
-                                    child: ChangeCaloriesTarget())));
-                      }),
-                ),
+                // Container(
+                //   padding: EdgeInsets.only(left: 15),
+                //   alignment: Alignment.centerLeft,
+                //   child: RaisedButton(
+                //       elevation: 4,
+                //       shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.all(Radius.circular(12))),
+                //       child: Text('Change Calories Target'),
+                //       onPressed: () {
+                //         showModalBottomSheet(
+                //             isScrollControlled: true,
+                //             context: context,
+                //             builder: (context) => SingleChildScrollView(
+                //                 child: Container(
+                //                     padding: EdgeInsets.only(
+                //                         bottom: MediaQuery.of(context)
+                //                             .viewInsets
+                //                             .bottom),
+                //                     child: ChangeCaloriesTarget())));
+                //       }),
+                // ),
               ],
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthreminder1/Screans/AfterRegester_Screan.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/Screans/Register_Screan.dart';
 import 'package:healthreminder1/Screans/Sginin_Screan.dart';
@@ -55,6 +56,7 @@ class _MyAppState extends State<MyApp> {
           Register_Screan.ScreanRoute: (context) => Register_Screan(),
           'AllThree': (context) => AllThree(),
           ChatSuggetion.ScreanRoute: (context) => MyWidget(),
+          AfterRegester_Screan.ScreanRoute: (context) => AfterRegester_Screan(),
         },
       ),
     );
