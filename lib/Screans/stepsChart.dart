@@ -26,7 +26,8 @@ class _ChartState extends State<stepsChart> {
           color: Colors.teal[100]),
       child: SfCircularChart(
         title: ChartTitle(
-            text: 'Target Steps ${Provider.of<Data>(context).TargetCalories}'),
+            text:
+                'Target Steps ${Provider.of<Data>(context).chartTargetSteps}'),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
         margin: EdgeInsets.all(0),
@@ -39,7 +40,8 @@ class _ChartState extends State<stepsChart> {
               xValueMapper: (chartData data, _) => data.name,
               yValueMapper: (chartData data, _) => data.type,
               dataLabelSettings: DataLabelSettings(isVisible: true),
-              maximumValue: 1000)
+              maximumValue: double.parse(
+                  Provider.of<Data>(context).chartTargetSteps.toString()))
         ],
       ),
     );

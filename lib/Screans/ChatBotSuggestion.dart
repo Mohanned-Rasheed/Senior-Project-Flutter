@@ -1,4 +1,5 @@
 import 'package:bubble/bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dialogflow_flutter/dialogflowFlutter.dart';
 import 'package:dialogflow_flutter/googleAuth.dart';
 import 'package:dialogflow_flutter/language.dart';
@@ -18,6 +19,11 @@ class ChatSuggetion extends State<MyWidget> {
   static const String ScreanRoute = 'ChatSuggetion';
   var messageCon = TextEditingController();
   List<Map> messages = [];
+  List<Meals> SuggestedMeals = [];
+  @override
+  void initState() {
+    response('start');
+  }
 
   void response(query) async {
     AuthGoogle authGoogle = await AuthGoogle(
@@ -34,13 +40,13 @@ class ChatSuggetion extends State<MyWidget> {
       });
     });
 
-    Meals m = Meals('name', 200);
-    Provider.of<Data>(context, listen: false).addcalo(m.calories);
-    Provider.of<Data>(context, listen: false).addUserMealsList(m);
-    Provider.of<Data>(context, listen: false)
-        .addDates(DateTime.now().toString());
-    Provider.of<Data>(context, listen: false).updateUser();
-    print("bro please ");
+    // Meals m = Meals('name', 200);
+    // Provider.of<Data>(context, listen: false).addcalo(m.calories);
+    // Provider.of<Data>(context, listen: false).addUserMealsList(m);
+    // Provider.of<Data>(context, listen: false)
+    //     .addDates(DateTime.now().toString());
+    // Provider.of<Data>(context, listen: false).updateUser();
+    // print("bro please ");
 
     // print(aiResponse.getListMessage()![0]["text"]["text"][0].toString());
     //print(messages[0]["message"].toString());
@@ -90,10 +96,6 @@ class ChatSuggetion extends State<MyWidget> {
                       hintText: "Enter a message",
                       hintStyle: TextStyle(color: Colors.black),
                       border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
                     ),
                     style: TextStyle(
                       fontSize: 16,
@@ -108,18 +110,77 @@ class ChatSuggetion extends State<MyWidget> {
                   ),
                   onPressed: () {
                     if (messageCon.text.isEmpty) {
-                      print("contrller emtay");
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Make Sure To Write Something'),
+                      ));
                     } else {
                       messages
                           .insert(0, {"data": 1, "messages": messageCon.text});
+                      if (int.tryParse(messageCon.text) == null) {
+                        response(messageCon.text);
+                      } else {
+                        if (int.parse(messageCon.text) < 4 &&
+                            SuggestedMeals.isNotEmpty) {
+                          // Provider.of<Data>(context, listen: false)
+                          //     .UserMeals
+                          //     .add(SuggestedMeals[int.parse(messageCon.text)]);
+                          Provider.of<Data>(context, listen: false).addcalo(
+                              SuggestedMeals[int.parse(messageCon.text) - 1]
+                                  .calories);
 
-                      response(messageCon.text);
+                          Provider.of<Data>(context, listen: false)
+                              .addUserMealsList(SuggestedMeals[
+                                  int.parse(messageCon.text) - 1]);
+                          Provider.of<Data>(context, listen: false)
+                              .addDates(DateTime.now().toString());
+                          Provider.of<Data>(context, listen: false)
+                              .ChartKepUpDate();
+                          updateUserMeals();
+                        }
+                      }
+                      if (messageCon.text.contains('sugg')) {
+                        SuggestedMeals.clear();
+                        int counter = 0;
+                        for (var i = 0;
+                            i <
+                                Provider.of<Data>(context, listen: false)
+                                    .meals
+                                    .length;
+                            i++) {
+                          if (Provider.of<Data>(context, listen: false)
+                                          .TargetCalories -
+                                      Provider.of<Data>(context, listen: false)
+                                          .totalCalories >
+                                  Provider.of<Data>(context, listen: false)
+                                      .meals[i]
+                                      .calories &&
+                              counter < 3) {
+                            Provider.of<Data>(context, listen: false)
+                                .meals
+                                .shuffle();
+                            SuggestedMeals.add(
+                                Provider.of<Data>(context, listen: false)
+                                    .meals[i]);
+                            String NewString = '${counter + 1}.' +
+                                Provider.of<Data>(context, listen: false)
+                                    .meals[i]
+                                    .name;
+                            setState(() {
+                              messages.insert(
+                                  0, {"data": 0, "messages": NewString});
+                            });
+
+                            counter++;
+                          }
+                        }
+                      }
+
                       messageCon.clear();
                     }
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (!currentFocus.hasPrimaryFocus) {
-                      currentFocus.unfocus();
-                    }
+                    // FocusScopeNode currentFocus = FocusScope.of(context);
+                    // if (!currentFocus.hasPrimaryFocus) {
+                    //   currentFocus.unfocus();
+                    // }
                   },
                 ),
               ),
@@ -169,5 +230,18 @@ class ChatSuggetion extends State<MyWidget> {
         ],
       ),
     );
+  }
+
+  void updateUserMeals() {
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
+    docUser.update({
+      'calories': Provider.of<Data>(context, listen: false).totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
+      'mealsCalories':
+          Provider.of<Data>(context, listen: false).UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
+    });
   }
 }

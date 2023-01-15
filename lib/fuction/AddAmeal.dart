@@ -10,6 +10,7 @@ class AddAmeal extends StatefulWidget {
 
 class _AddAmealState extends State<AddAmeal> {
   get i => null;
+  String search = '';
 
   @override
   Widget build(BuildContext context) {
@@ -28,52 +29,109 @@ class _AddAmealState extends State<AddAmeal> {
     }
 
     return Scaffold(
-      body: ListView.builder(
-        itemCount: Provider.of<Data>(context).meals.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            color: Colors.amber,
-            elevation: 4,
-            margin: EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 8),
-            child: ListTile(
-              title: Container(
-                child: Text(Provider.of<Data>(context).meals[index].name),
-                padding: EdgeInsets.symmetric(horizontal: 10),
-              ),
-              subtitle: Container(
-                child: Text(
-                    ' calories: ${Provider.of<Data>(context).meals[index].calories}'),
-              ),
-              trailing: Container(
-                child: RaisedButton(
-                  onPressed: (() {
-                    Provider.of<Data>(context, listen: false).addcalo(
-                        Provider.of<Data>(context, listen: false)
-                            .meals[index]
-                            .calories);
-
-                    Provider.of<Data>(context, listen: false).addUserMealsList(
-                        Provider.of<Data>(context, listen: false).meals[index]);
-                    Provider.of<Data>(context, listen: false)
-                        .addDates(DateTime.now().toString());
-                    Provider.of<Data>(context, listen: false).ChartKepUpDate();
-                    updateUserMeals();
-                    // showModalBottomSheet(
-                    //     context: context,
-                    //     builder: (context) => Container(
-                    //           child: SingleChildScrollView(
-                    //               child: Container(
-                    //             child: AddAmeal(),
-                    //             height: 350,
-                    //           )),
-                    //         ));
-                  }),
-                  child: Text('Add'),
+      body: Column(
+        children: [
+          Container(
+            color: Colors.teal[100],
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                    Radius.circular(12),
+                  )),
                 ),
+                style: TextStyle(fontSize: 18),
+                onChanged: (value) {
+                  search = value;
+                  Provider.of<Data>(context, listen: false).Searchmeals.clear();
+                  for (var i = 0;
+                      i <
+                          Provider.of<Data>(context, listen: false)
+                              .meals
+                              .length;
+                      i++) {
+                    if (Provider.of<Data>(context, listen: false)
+                        .meals[i]
+                        .name
+                        .toLowerCase()
+                        .contains(search.toLowerCase())) {
+                      Provider.of<Data>(context, listen: false).Searchmeals.add(
+                          Provider.of<Data>(context, listen: false).meals[i]);
+                    }
+                  }
+                },
               ),
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.teal[100],
+              child: ListView.builder(
+                itemCount: Provider.of<Data>(context).Searchmeals.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    color: Colors.amber,
+                    elevation: 4,
+                    margin:
+                        EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 8),
+                    child: ListTile(
+                      title: Container(
+                        child: Text(
+                            Provider.of<Data>(context).Searchmeals[index].name),
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                      ),
+                      subtitle: Container(
+                        child: Text(
+                            ' calories: ${Provider.of<Data>(context).Searchmeals[index].calories}'),
+                      ),
+                      trailing: Container(
+                        child: RaisedButton(
+                          color: Colors.teal[200],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          onPressed: (() {
+                            Provider.of<Data>(context, listen: false).addcalo(
+                                Provider.of<Data>(context, listen: false)
+                                    .Searchmeals[index]
+                                    .calories);
+
+                            Provider.of<Data>(context, listen: false)
+                                .addUserMealsList(
+                                    Provider.of<Data>(context, listen: false)
+                                        .Searchmeals[index]);
+                            Provider.of<Data>(context, listen: false)
+                                .addDates(DateTime.now().toString());
+                            Provider.of<Data>(context, listen: false)
+                                .ChartKepUpDate();
+                            updateUserMeals();
+                            // showModalBottomSheet(
+                            //     context: context,
+                            //     builder: (context) => Container(
+                            //           child: SingleChildScrollView(
+                            //               child: Container(
+                            //             child: AddAmeal(),
+                            //             height: 350,
+                            //           )),
+                            //         ));
+                          }),
+                          child: Text('Add',
+                              style: TextStyle(color: Colors.black54)),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

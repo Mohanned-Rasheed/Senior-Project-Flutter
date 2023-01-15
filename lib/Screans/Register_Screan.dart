@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:healthreminder1/Screans/AfterRegester_Screan.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -32,10 +33,16 @@ class _Register_ScreanState extends State<Register_Screan> {
       'caloriesTarget':
           Provider.of<Data>(context, listen: false).TargetCalories,
       'steps': Provider.of<Data>(context, listen: false).steps,
+      'TargetSteps': Provider.of<Data>(context, listen: false).TargetSteps,
+      'caloriesBurnt': Provider.of<Data>(context, listen: false).caloriesBurnt,
+      'TargetCaloriesBurning':
+          Provider.of<Data>(context, listen: false).TargetCaloriesBurning,
       'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
       'mealsCalories':
           Provider.of<Data>(context, listen: false).UserMealsCalories,
       'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
+      'Weight': Provider.of<Data>(context, listen: false).Weight,
+      'Height': Provider.of<Data>(context, listen: false).Height,
       //.subtract(Duration(days: 7))
     };
 
@@ -154,12 +161,14 @@ class _Register_ScreanState extends State<Register_Screan> {
                         final newUser =
                             await _auth.createUserWithEmailAndPassword(
                                 email: email, password: password);
-                        Navigator.pushNamed(context, 'AllThree');
+
+                        getCurrentUser();
+                        createUser();
+                        Navigator.pushNamed(
+                            context, AfterRegester_Screan.ScreanRoute);
                         setState(() {
                           showSpinner = false;
                         });
-                        getCurrentUser();
-                        createUser();
                       } catch (e) {
                         setState(() {
                           showSpinner = false;

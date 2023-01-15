@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,6 @@ import 'package:healthreminder1/Screans/stepsChart.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
 import 'package:healthreminder1/Screans/UserMealsList.dart';
-import 'package:healthreminder1/fuction/MealsCSV.dart';
 import 'package:healthreminder1/fuction/changeCaloriesTarget.dart';
 import 'package:healthreminder1/fuction/notification_service.dart';
 import 'package:healthreminder1/models/Meals.dart';
@@ -25,10 +25,16 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fling_pickle/fling_pickle.dart';
 import 'package:http/http.dart' as http;
 
+import 'BurntCaloriesChart.dart';
+import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:excel/excel.dart' as exele;
+
 String _scanBarcode = 'Unknown';
 var IsCreated = true;
 
 class CaloriesSection extends StatefulWidget {
+  static const String ScreanRoute = 'CaloriesSection';
   @override
   State<CaloriesSection> createState() {
     return _CaloriesSectionState();
@@ -69,8 +75,22 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     Notification.initialiseNotifications();
     getCurrentUser();
     getDataAtFirst();
-
+    _loadCSV();
     //DateTime.parse();
+  }
+
+  void _loadCSV() async {
+    final _rawData =
+        await rootBundle.loadString("assets/Food_and_Calories_-_Sheet1.csv");
+    List<List<dynamic>> _listData = CsvToListConverter().convert(_rawData);
+
+    for (var i = 1; i < _listData.length; i++) {
+      Provider.of<Data>(context, listen: false).meals.add(Meals(
+          _listData[i][0].toString(), int.parse(_listData[i][1].toString())));
+
+      Provider.of<Data>(context, listen: false).Searchmeals.add(Meals(
+          _listData[i][0].toString(), int.parse(_listData[i][1].toString())));
+    }
   }
 
   void updateSteps() {
@@ -96,11 +116,27 @@ class _CaloriesSectionState extends State<CaloriesSection> {
             Provider.of<Data>(context, listen: false).StepsChart[0].type =
                 element.get("steps");
 
+            Provider.of<Data>(context, listen: false)
+                .CaloriesBurntChart[0]
+                .type = element.get("caloriesBurnt");
+
             Provider.of<Data>(context, listen: false).totalCalories =
                 element.get("calories");
 
+            Provider.of<Data>(context, listen: false).TargetCalories =
+                element.get("caloriesTarget");
+
             Provider.of<Data>(context, listen: false).steps =
                 element.get("steps");
+
+            Provider.of<Data>(context, listen: false).TargetSteps =
+                element.get("TargetSteps");
+
+            Provider.of<Data>(context, listen: false).caloriesBurnt =
+                element.get("caloriesBurnt");
+
+            Provider.of<Data>(context, listen: false).TargetCaloriesBurning =
+                element.get("TargetCaloriesBurning");
 
             Provider.of<Data>(context, listen: false).UserMealsNames =
                 element.get("mealsName");
@@ -108,13 +144,9 @@ class _CaloriesSectionState extends State<CaloriesSection> {
             Provider.of<Data>(context, listen: false).UserMealsCalories =
                 element.get("mealsCalories");
 
-            Provider.of<Data>(context, listen: false).TargetCalories =
-                element.get("caloriesTarget");
-
             Provider.of<Data>(context, listen: false).UserMealsDates =
                 element.get("dateOfTheDay");
-            Provider.of<Data>(context, listen: false).chartTargetCalories =
-                element.get('caloriesTarget');
+
             // if (true) {
             // Notification.sendNotification('this is title', 'this is body');
             //   }
@@ -150,6 +182,7 @@ class _CaloriesSectionState extends State<CaloriesSection> {
       'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
       'mealsCalories':
           Provider.of<Data>(context, listen: false).UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
     });
   }
 
@@ -202,6 +235,8 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     Provider.of<Data>(context, listen: false).totalCalories = 0;
     Provider.of<Data>(context, listen: false).steps = 0;
     Provider.of<Data>(context, listen: false).TargetCalories = 2000;
+    Provider.of<Data>(context, listen: false).TargetSteps = 5000;
+    Provider.of<Data>(context, listen: false).TargetCaloriesBurning = 100;
 
     _auth.signOut();
     Navigator.pushNamed(context, WelcomeScrean.ScreanRoute);
@@ -293,6 +328,10 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                             SizedBox(
                               width: 50,
                             ),
+                            BurntCaloriesChart(),
+                            SizedBox(
+                              width: 50,
+                            )
                           ],
                         ),
                       ),
@@ -355,8 +394,48 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                     child: FirebaseAnimatedList(
                       query: ref,
                       itemBuilder: (context, snapshot, animation, index) {
-                        Provider.of<Data>(context).updateSteps(snapshot.value);
+                        Provider.of<Data>(context, listen: false)
+                            .updateSteps(snapshot.value);
                         updateSteps();
+
+                        if (Provider.of<Data>(context, listen: false).Height >
+                            180) {
+                          Provider.of<Data>(context, listen: false)
+                                  .CaloriesBurntChart[0]
+                                  .type =
+                              ((Provider.of<Data>(context, listen: false)
+                                              .Weight /
+                                          1666) *
+                                      Provider.of<Data>(context, listen: false)
+                                          .steps)
+                                  .floor();
+                        } else if (Provider.of<Data>(context, listen: false)
+                                    .Height >
+                                167 &&
+                            Provider.of<Data>(context, listen: false).Height <
+                                188) {
+                          Provider.of<Data>(context, listen: false)
+                                  .CaloriesBurntChart[0]
+                                  .type =
+                              (((Provider.of<Data>(context, listen: false)
+                                                  .Weight /
+                                              1666) *
+                                          0.914) *
+                                      Provider.of<Data>(context, listen: false)
+                                          .steps)
+                                  .floor();
+                        } else {
+                          Provider.of<Data>(context, listen: false)
+                                  .CaloriesBurntChart[0]
+                                  .type =
+                              (((Provider.of<Data>(context, listen: false)
+                                                  .Weight /
+                                              1666) *
+                                          0.837) *
+                                      Provider.of<Data>(context, listen: false)
+                                          .steps)
+                                  .floor();
+                        }
 
                         return Text('');
                       },
@@ -497,6 +576,7 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
     Provider.of<Data>(context, listen: false)
         .addDates(DateTime.now().toString());
+    Provider.of<Data>(context, listen: false).ChartKepUpDate();
     updateUserMeals();
   }
 }

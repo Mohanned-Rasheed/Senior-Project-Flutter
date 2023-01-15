@@ -73,7 +73,7 @@ class UserMealsList extends State<MealsList> {
                                         child: SingleChildScrollView(
                                             child: Container(
                                           child: AddAmeal(),
-                                          height: 350,
+                                          height: 500,
                                         )),
                                       ));
                             },
@@ -85,6 +85,9 @@ class UserMealsList extends State<MealsList> {
                                 child: Column(
                                   children: [
                                     Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
                                       margin: EdgeInsets.only(
@@ -94,12 +97,15 @@ class UserMealsList extends State<MealsList> {
                                           bottom: 8),
                                       child: ListTile(
                                         title: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 13.0),
+                                          padding: const EdgeInsets.only(
+                                            top: 13.0,
+                                          ),
                                           child: Container(
-                                            child: Text(
-                                              "Add Meal",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Center(
+                                              child: Text(
+                                                "Add Meal",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10),
@@ -137,6 +143,9 @@ class UserMealsList extends State<MealsList> {
                                 child: Column(
                                   children: [
                                     Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
                                       margin: EdgeInsets.only(
@@ -149,9 +158,11 @@ class UserMealsList extends State<MealsList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
-                                            child: Text(
-                                              "Add Calories",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Center(
+                                              child: Text(
+                                                "Add Calories",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10),
@@ -181,6 +192,9 @@ class UserMealsList extends State<MealsList> {
                                 child: Column(
                                   children: [
                                     Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
                                       margin: EdgeInsets.only(
@@ -193,9 +207,11 @@ class UserMealsList extends State<MealsList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
-                                            child: Text(
-                                              "ScanQrCode",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Center(
+                                              child: Text(
+                                                "ScanQrCode",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10),
@@ -226,6 +242,9 @@ class UserMealsList extends State<MealsList> {
                                 child: Column(
                                   children: [
                                     Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
                                       margin: EdgeInsets.only(
@@ -238,9 +257,11 @@ class UserMealsList extends State<MealsList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
-                                            child: Text(
-                                              "ChatBotSuggetion",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Center(
+                                              child: Text(
+                                                "ChatBotSuggetion",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10),
@@ -279,6 +300,9 @@ class UserMealsList extends State<MealsList> {
                                 child: Column(
                                   children: [
                                     Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
                                       margin: EdgeInsets.only(
@@ -291,9 +315,11 @@ class UserMealsList extends State<MealsList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
-                                            child: Text(
-                                              "Change Calories Target",
-                                              style: TextStyle(fontSize: 20),
+                                            child: Center(
+                                              child: Text(
+                                                "Change Calories Target",
+                                                style: TextStyle(fontSize: 20),
+                                              ),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10),
@@ -333,7 +359,7 @@ class UserMealsList extends State<MealsList> {
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
                           Provider.of<Data>(context, listen: false)
-                              .dayTargetCaloriesMultiplyer = 1;
+                              .dayTargetMultiplyer = 1;
 
                           Provider.of<Data>(context, listen: false)
                                   .chartTargetCalories =
@@ -341,7 +367,17 @@ class UserMealsList extends State<MealsList> {
                                   .TargetCalories;
 
                           Provider.of<Data>(context, listen: false)
-                              .dayTargetCaloriesMultiplyer = 1;
+                              .dayTargetMultiplyer = 1;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetSteps =
+                              Provider.of<Data>(context, listen: false)
+                                  .TargetSteps;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCaloriesBurning =
+                              Provider.of<Data>(context, listen: false)
+                                  .TargetCaloriesBurning;
                         } else if (selectedItem == 'last 3 days') {
                           Provider.of<Data>(context, listen: false)
                               .changeListDate(
@@ -351,14 +387,28 @@ class UserMealsList extends State<MealsList> {
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
-                              .dayTargetCaloriesMultiplyer = 3;
+                              .dayTargetMultiplyer = 3;
 
                           Provider.of<Data>(context, listen: false)
                                   .chartTargetCalories =
                               Provider.of<Data>(context, listen: false)
                                       .TargetCalories *
                                   Provider.of<Data>(context, listen: false)
-                                      .dayTargetCaloriesMultiplyer;
+                                      .dayTargetMultiplyer;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetSteps =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetSteps *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetMultiplyer;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCaloriesBurning =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetCaloriesBurning *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetMultiplyer;
                         } else if (selectedItem == 'last week') {
                           Provider.of<Data>(context, listen: false)
                               .changeListDate(
@@ -368,14 +418,28 @@ class UserMealsList extends State<MealsList> {
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
-                              .dayTargetCaloriesMultiplyer = 7;
+                              .dayTargetMultiplyer = 7;
 
                           Provider.of<Data>(context, listen: false)
                                   .chartTargetCalories =
                               Provider.of<Data>(context, listen: false)
                                       .TargetCalories *
                                   Provider.of<Data>(context, listen: false)
-                                      .dayTargetCaloriesMultiplyer;
+                                      .dayTargetMultiplyer;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetSteps =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetSteps *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetMultiplyer;
+
+                          Provider.of<Data>(context, listen: false)
+                                  .chartTargetCaloriesBurning =
+                              Provider.of<Data>(context, listen: false)
+                                      .TargetCaloriesBurning *
+                                  Provider.of<Data>(context, listen: false)
+                                      .dayTargetMultiplyer;
                         }
                       }),
                     ),
@@ -457,7 +521,9 @@ class UserMealsList extends State<MealsList> {
                                   .UserMealsDates[index])
                               .day
                       ? Card(
-                          color: Colors.amber,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          color: Colors.teal[100],
                           elevation: 4,
                           margin: EdgeInsets.only(
                               top: 8, left: 20, right: 20, bottom: 8),
@@ -527,7 +593,9 @@ class UserMealsList extends State<MealsList> {
     Meals newMeal = new Meals(Value[0], int.parse(Value[1]));
     Provider.of<Data>(context, listen: false).addUserMealsList(newMeal);
     Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
-    Provider.of<Data>(context).ChartKepUpDate();
+    Provider.of<Data>(context, listen: false)
+        .addDates(DateTime.now().toString());
+    Provider.of<Data>(context, listen: false).ChartKepUpDate();
     updateUserMeals();
   }
 

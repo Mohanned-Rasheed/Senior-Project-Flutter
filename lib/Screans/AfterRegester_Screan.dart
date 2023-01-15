@@ -5,6 +5,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
+import 'Calories.dart';
+
 class AfterRegester_Screan extends StatefulWidget {
   const AfterRegester_Screan({Key? key}) : super(key: key);
   static const String ScreanRoute = 'AfterRegester_Screan';
@@ -47,24 +49,11 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 18),
                   onChanged: (value) {
-                    try {
-                      if (value != "") {
-                        Weight = double.parse(value);
-                      }
-                      if (value == "") {
-                        Weight = 0;
-                      }
-                    } catch (e) {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Error'),
-                              content:
-                                  Text('Please Enter Your Weight as Numbers'),
-                            );
-                          });
-                      print("Please Enter Only Numbers");
+                    if (value == '' || value == null) {
+                      Weight = 0;
+                    }
+                    if (double.tryParse(value) != null) {
+                      Weight = double.parse(value);
                     }
                   },
                   decoration: InputDecoration(
@@ -100,21 +89,11 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 18),
                   onChanged: (value) {
-                    try {
-                      if (value != "") {
-                        Height = double.parse(value);
-                      }
-                    } catch (e) {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Error'),
-                              content:
-                                  Text('Please Enter Your Height as Numbers'),
-                            );
-                          });
-                      print("Please Enter Only Numbers");
+                    if (value == '' || value == null) {
+                      Height = 0;
+                    }
+                    if (double.tryParse(value) != null) {
+                      Height = double.parse(value);
                     }
                   },
                   decoration: InputDecoration(
@@ -154,40 +133,32 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                     child: MaterialButton(
                       onPressed: () {
                         try {
-                          if (Weight == 0) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text('Please Enter Your Weight'),
-                                  );
-                                });
-                          } else if (Height == 0) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text('Please Enter Your Height'),
-                                  );
-                                });
+                          if (Weight == null || Weight <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  'Please Enter Your Weight make sure it\'s Positve Value'),
+                            ));
+                            return;
+                          } else if (Height == null || Height <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  'Please Enter Your Height make sure it\'s Positve Value'),
+                            ));
+                            return;
                           }
+
                           Provider.of<Data>(context, listen: false).Weight =
                               Weight;
                           Provider.of<Data>(context, listen: false).Height =
                               Height;
+                          Provider.of<Data>(context, listen: false)
+                              .UpdateWeightAndHeight();
+                          Navigator.pushNamed(context, 'AllThree');
                         } catch (e) {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text(
-                                      'Please Enter Your Weight and Height as Numbers'),
-                                );
-                              });
-                          print("Sorry Only Number");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                'Please Enter Your Weight and Height as Numbers'),
+                          ));
                         }
                       },
                       minWidth: 200,

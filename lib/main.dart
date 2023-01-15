@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
           'AllThree': (context) => AllThree(),
           ChatSuggetion.ScreanRoute: (context) => MyWidget(),
           AfterRegester_Screan.ScreanRoute: (context) => AfterRegester_Screan(),
+          CaloriesSection.ScreanRoute: (context) => CaloriesSection(),
         },
       ),
     );

@@ -44,10 +44,10 @@ dependencies:
   provider: ^6.0.4
   http: ^0.13.5
   flutter_barcode_scanner: ^2.0.0
-
+  excel: ^2.0.1
   bubble:
   dialogflow_flutter: ^1.0.0
-  
+  csv: ^5.0.1
   qr_flutter: ^4.0.0
   
 
@@ -77,6 +77,7 @@ flutter:
   assets:
     - images/
     - assets/credentials.json
+    - assets/Food_and_Calories_-_Sheet1.csv
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
