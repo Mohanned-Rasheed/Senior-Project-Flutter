@@ -25,35 +25,81 @@ class _Register_ScreanState extends State<Register_Screan> {
   void createUser() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection('Data');
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection('Data')
+        .doc("WaterData")
+        .set({
+      'TotalWaterPortion': 0,
+      'WaterTarget': 1500,
+    });
 
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection('Data')
+        .doc("SleepData")
+        .set({});
     final json = {
-      'email': Provider.of<Data>(context, listen: false).singedInUser.email,
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'caloriesTarget':
-          Provider.of<Data>(context, listen: false).TargetCalories,
-      'steps': Provider.of<Data>(context, listen: false).steps,
-      'TargetSteps': Provider.of<Data>(context, listen: false).TargetSteps,
-      'caloriesBurnt': Provider.of<Data>(context, listen: false).caloriesBurnt,
-      'TargetCaloriesBurning':
-          Provider.of<Data>(context, listen: false).TargetCaloriesBurning,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
-      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
-      'Weight': Provider.of<Data>(context, listen: false).Weight,
-      'Height': Provider.of<Data>(context, listen: false).Height,
+      'email': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .singedInUser
+          .email,
+      'calories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .totalCalories,
+      'caloriesTarget': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .TargetCalories,
+      'steps':
+          Provider.of<Data>(context, listen: false).CaloriesSectionData.steps,
+      'TargetSteps': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .TargetSteps,
+      'caloriesBurnt': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .caloriesBurnt,
+      'TargetCaloriesBurning': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .TargetCaloriesBurning,
+      'mealsName': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsNames,
+      'mealsCalories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsDates,
+      'Weight':
+          Provider.of<Data>(context, listen: false).CaloriesSectionData.Weight,
+      'Height':
+          Provider.of<Data>(context, listen: false).CaloriesSectionData.Height,
       //.subtract(Duration(days: 7))
     };
 
-    docUser.set(json);
+    docUser.doc('CaloriesData').set(json);
   }
 
   void getCurrentUser() {
     try {
       final user = _auth.currentUser;
       if (user != null) {
-        Provider.of<Data>(context, listen: false).singedInUser = user;
+        Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser = user;
       }
     } catch (e) {
       print(e);

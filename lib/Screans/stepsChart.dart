@@ -16,7 +16,8 @@ class stepsChart extends StatefulWidget {
 }
 
 class _ChartState extends State<stepsChart> {
-  late List<chartData> _chartData = Provider.of<Data>(context).StepsChart;
+  late List<chartData> _chartData =
+      Provider.of<Data>(context).CaloriesSectionData.StepsChart;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class _ChartState extends State<stepsChart> {
       child: SfCircularChart(
         title: ChartTitle(
             text:
-                'Target Steps ${Provider.of<Data>(context).chartTargetSteps}'),
+                'Target Steps ${Provider.of<Data>(context, listen: false).CaloriesSectionData.chartTargetSteps}'),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
         margin: EdgeInsets.all(0),
@@ -41,7 +42,10 @@ class _ChartState extends State<stepsChart> {
               yValueMapper: (chartData data, _) => data.type,
               dataLabelSettings: DataLabelSettings(isVisible: true),
               maximumValue: double.parse(
-                  Provider.of<Data>(context).chartTargetSteps.toString()))
+                  Provider.of<Data>(context, listen: false)
+                      .CaloriesSectionData
+                      .chartTargetSteps
+                      .toString()))
         ],
       ),
     );

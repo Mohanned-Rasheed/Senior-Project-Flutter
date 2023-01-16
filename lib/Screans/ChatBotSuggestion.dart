@@ -114,64 +114,88 @@ class ChatSuggetion extends State<MyWidget> {
                         content: Text('Make Sure To Write Something'),
                       ));
                     } else {
-                      messages
-                          .insert(0, {"data": 1, "messages": messageCon.text});
-                      if (int.tryParse(messageCon.text) == null) {
-                        response(messageCon.text);
-                      } else {
-                        if (int.parse(messageCon.text) < 4 &&
-                            SuggestedMeals.isNotEmpty) {
-                          // Provider.of<Data>(context, listen: false)
-                          //     .UserMeals
-                          //     .add(SuggestedMeals[int.parse(messageCon.text)]);
-                          Provider.of<Data>(context, listen: false).addcalo(
-                              SuggestedMeals[int.parse(messageCon.text) - 1]
-                                  .calories);
+                      setState(() {
+                        messages.insert(
+                            0, {"data": 1, "messages": messageCon.text});
+                      });
 
-                          Provider.of<Data>(context, listen: false)
-                              .addUserMealsList(SuggestedMeals[
-                                  int.parse(messageCon.text) - 1]);
-                          Provider.of<Data>(context, listen: false)
-                              .addDates(DateTime.now().toString());
-                          Provider.of<Data>(context, listen: false)
-                              .ChartKepUpDate();
-                          updateUserMeals();
-                        }
+                      if (int.tryParse(messageCon.text) != null &&
+                          int.parse(messageCon.text) < 4 &&
+                          SuggestedMeals.isNotEmpty) {
+                        // Provider.of<Data>(context, listen: false)
+                        //     .UserMeals
+                        //     .add(SuggestedMeals[int.parse(messageCon.text)]);
+                        Provider.of<Data>(context, listen: false).addcalo(
+                            SuggestedMeals[int.parse(messageCon.text) - 1]
+                                .calories);
+
+                        Provider.of<Data>(context, listen: false)
+                            .addUserMealsList(
+                                SuggestedMeals[int.parse(messageCon.text) - 1]);
+                        Provider.of<Data>(context, listen: false)
+                            .addDates(DateTime.now().toString());
+                        Provider.of<Data>(context, listen: false)
+                            .ChartKepUpDate();
+                        updateUserMeals();
                       }
+
                       if (messageCon.text.contains('sugg')) {
                         SuggestedMeals.clear();
+                        Provider.of<Data>(context, listen: false)
+                            .CaloriesSectionData
+                            .meals
+                            .shuffle();
                         int counter = 0;
                         for (var i = 0;
                             i <
                                 Provider.of<Data>(context, listen: false)
+                                    .CaloriesSectionData
                                     .meals
                                     .length;
                             i++) {
                           if (Provider.of<Data>(context, listen: false)
+                                          .CaloriesSectionData
                                           .TargetCalories -
                                       Provider.of<Data>(context, listen: false)
-                                          .totalCalories >
+                                          .CaloriesSectionData
+                                          .CaloriesChart[0]
+                                          .type >=
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .meals[i]
                                       .calories &&
                               counter < 3) {
-                            Provider.of<Data>(context, listen: false)
-                                .meals
-                                .shuffle();
-                            SuggestedMeals.add(
+                            String NewString = '';
+                            if (!SuggestedMeals.contains(
                                 Provider.of<Data>(context, listen: false)
-                                    .meals[i]);
-                            String NewString = '${counter + 1}.' +
-                                Provider.of<Data>(context, listen: false)
-                                    .meals[i]
-                                    .name;
-                            setState(() {
-                              messages.insert(
-                                  0, {"data": 0, "messages": NewString});
-                            });
-
-                            counter++;
+                                    .CaloriesSectionData
+                                    .meals[i])) {
+                              SuggestedMeals.add(
+                                  Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
+                                      .meals[i]);
+                              NewString = '${counter + 1}.' +
+                                  Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
+                                      .meals[i]
+                                      .name +
+                                  ', ${Provider.of<Data>(context, listen: false).CaloriesSectionData.meals[i].calories} Calories';
+                              setState(() {
+                                messages.insert(
+                                    0, {"data": 0, "messages": NewString});
+                              });
+                              counter++;
+                            }
                           }
+                        }
+                        if (SuggestedMeals.isNotEmpty) {
+                          response(messageCon.text);
+                        } else {
+                          response('NoSuggestion');
+                        }
+                      } else {
+                        if (int.tryParse(messageCon.text) == null) {
+                          response(messageCon.text);
                         }
                       }
 
@@ -235,13 +259,24 @@ class ChatSuggetion extends State<MyWidget> {
   void updateUserMeals() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-    docUser.update({
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
-      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'calories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsNames,
+      'mealsCalories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsDates,
     });
   }
 }

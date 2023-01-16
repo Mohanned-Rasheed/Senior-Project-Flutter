@@ -5,9 +5,12 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
+import 'package:healthreminder1/fuction/ChangeBurningCaloriesTarget.dart';
 import 'package:healthreminder1/fuction/ChangeCaloriesTarget.dart';
+import 'package:healthreminder1/fuction/ChangeStepsTarget.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:provider/provider.dart';
+import '../fuction/TargetChanger.dart';
 import '../userData/Data.dart';
 
 class MealsList extends StatefulWidget {
@@ -26,14 +29,24 @@ class UserMealsList extends State<MealsList> {
     void updateUser() {
       final docUser = FirebaseFirestore.instance
           .collection('Users')
-          .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-      docUser.update({
-        'calories': Provider.of<Data>(context, listen: false).totalCalories,
-        'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-        'mealsCalories':
-            Provider.of<Data>(context, listen: false).UserMealsCalories,
-        'dateOfTheDay':
-            Provider.of<Data>(context, listen: false).UserMealsDates,
+          .doc(Provider.of<Data>(context, listen: false)
+              .CaloriesSectionData
+              .singedInUser
+              .email)
+          .collection("Data");
+      docUser.doc('CaloriesData').update({
+        'calories': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .totalCalories,
+        'mealsName': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsNames,
+        'mealsCalories': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsCalories,
+        'dateOfTheDay': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsDates,
       });
     }
 
@@ -47,6 +60,25 @@ class UserMealsList extends State<MealsList> {
         ),
         child: Column(
           children: [
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(200),
+            //   child: SizedBox(
+            //     height: 200,
+            //     width: 200,
+            //     child: Stack(children: [
+            //       Container(
+            //         color: Colors.black,
+            //       ),
+            //       Align(
+            //         alignment: Alignment.bottomCenter,
+            //         child: Container(
+            //           height: 200 * (3 / 8),
+            //           color: Colors.white,
+            //         ),
+            //       )
+            //     ]),
+            //   ),
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -62,281 +94,288 @@ class UserMealsList extends State<MealsList> {
                     backgroundColor: Colors.teal[100],
                     context: context,
                     builder: (context) {
-                      return Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => Container(
-                                        child: SingleChildScrollView(
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => Container(
+                                          child: SingleChildScrollView(
+                                              child: Container(
+                                            child: AddAmeal(),
+                                            height: 500,
+                                          )),
+                                        ));
+                              },
+                              child: SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        color: Colors.amber,
+                                        elevation: 4,
+                                        margin: EdgeInsets.only(
+                                            top: 8,
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 8),
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 13.0,
+                                            ),
                                             child: Container(
-                                          child: AddAmeal(),
-                                          height: 500,
-                                        )),
-                                      ));
-                            },
-                            child: SingleChildScrollView(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      color: Colors.amber,
-                                      elevation: 4,
-                                      margin: EdgeInsets.only(
-                                          top: 8,
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 8),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 13.0,
-                                          ),
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                "Add Meal",
-                                                style: TextStyle(fontSize: 20),
+                                              child: Center(
+                                                child: Text(
+                                                  "Add Meal",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ),
                                               ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                          ),
+                                          subtitle: Container(
+                                            child: Text(''),
+                                          ),
+                                          trailing: Container(
+                                            child: Text(''),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          child: Text(''),
-                                        ),
-                                        trailing: Container(
-                                          child: Text(''),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => Container(
-                                        child: SingleChildScrollView(
+                                      )
+                                    ],
+                                  )),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => Container(
+                                          child: SingleChildScrollView(
+                                              child: Container(
+                                            child: Addcalories(),
+                                            height: 350,
+                                          )),
+                                        ));
+                              },
+                              child: SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        color: Colors.amber,
+                                        elevation: 4,
+                                        margin: EdgeInsets.only(
+                                            top: 8,
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 8),
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 13.0),
                                             child: Container(
-                                          child: Addcalories(),
-                                          height: 350,
-                                        )),
-                                      ));
-                            },
-                            child: SingleChildScrollView(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      color: Colors.amber,
-                                      elevation: 4,
-                                      margin: EdgeInsets.only(
-                                          top: 8,
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 8),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 13.0),
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                "Add Calories",
-                                                style: TextStyle(fontSize: 20),
+                                              child: Center(
+                                                child: Text(
+                                                  "Add Calories",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ),
                                               ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                          ),
+                                          subtitle: Container(
+                                            child: Text(''),
+                                          ),
+                                          trailing: Container(
+                                            child: Text(''),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          child: Text(''),
-                                        ),
-                                        trailing: Container(
-                                          child: Text(''),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              scanQR();
-                            },
-                            child: SingleChildScrollView(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      color: Colors.amber,
-                                      elevation: 4,
-                                      margin: EdgeInsets.only(
-                                          top: 8,
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 8),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 13.0),
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                "ScanQrCode",
-                                                style: TextStyle(fontSize: 20),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                scanQR();
+                              },
+                              child: SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        color: Colors.amber,
+                                        elevation: 4,
+                                        margin: EdgeInsets.only(
+                                            top: 8,
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 8),
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 13.0),
+                                            child: Container(
+                                              child: Center(
+                                                child: Text(
+                                                  "ScanQrCode",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ),
                                               ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                          ),
+                                          subtitle: Container(
+                                            child: Text(''),
+                                          ),
+                                          trailing: Container(
+                                            child: Text(''),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          child: Text(''),
-                                        ),
-                                        trailing: Container(
-                                          child: Text(''),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(
-                                  context, ChatSuggetion.ScreanRoute);
-                            },
-                            child: SingleChildScrollView(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      color: Colors.amber,
-                                      elevation: 4,
-                                      margin: EdgeInsets.only(
-                                          top: 8,
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 8),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 13.0),
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                "ChatBotSuggetion",
-                                                style: TextStyle(fontSize: 20),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(
+                                    context, ChatSuggetion.ScreanRoute);
+                              },
+                              child: SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        color: Colors.amber,
+                                        elevation: 4,
+                                        margin: EdgeInsets.only(
+                                            top: 8,
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 8),
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 13.0),
+                                            child: Container(
+                                              child: Center(
+                                                child: Text(
+                                                  "ChatBotSuggetion",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ),
                                               ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                          ),
+                                          subtitle: Container(
+                                            child: Text(''),
+                                          ),
+                                          trailing: Container(
+                                            child: Text(''),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          child: Text(''),
-                                        ),
-                                        trailing: Container(
-                                          child: Text(''),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              showModalBottomSheet(
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => SingleChildScrollView(
-                                      child: Container(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom),
-                                          child: ChangeCaloriesTarget())));
-                            },
-                            child: SingleChildScrollView(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      color: Colors.amber,
-                                      elevation: 4,
-                                      margin: EdgeInsets.only(
-                                          top: 8,
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 8),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 13.0),
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                "Change Calories Target",
-                                                style: TextStyle(fontSize: 20),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    context: context,
+                                    builder: (context) => SingleChildScrollView(
+                                        child: Container(
+                                            padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            child: TargetChanger())));
+                              },
+                              child: SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        color: Colors.amber,
+                                        elevation: 4,
+                                        margin: EdgeInsets.only(
+                                            top: 8,
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 8),
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 13.0),
+                                            child: Container(
+                                              child: Center(
+                                                child: Text(
+                                                  "Change Targets",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ),
                                               ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                          ),
+                                          subtitle: Container(
+                                            child: Text(''),
+                                          ),
+                                          trailing: Container(
+                                            child: Text(''),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          child: Text(''),
-                                        ),
-                                        trailing: Container(
-                                          child: Text(''),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                        ],
+                                      )
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
@@ -359,24 +398,32 @@ class UserMealsList extends State<MealsList> {
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
                           Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
                               .dayTargetMultiplyer = 1;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .TargetCalories;
 
                           Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
                               .dayTargetMultiplyer = 1;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .TargetSteps;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .TargetCaloriesBurning;
                         } else if (selectedItem == 'last 3 days') {
                           Provider.of<Data>(context, listen: false)
@@ -387,58 +434,78 @@ class UserMealsList extends State<MealsList> {
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
                               .dayTargetMultiplyer = 3;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetCalories *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetSteps *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetCaloriesBurning *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
                         } else if (selectedItem == 'last week') {
                           Provider.of<Data>(context, listen: false)
                               .changeListDate(
-                                  DateTime.now().subtract(Duration(days: 3)));
+                                  DateTime.now().subtract(Duration(days: 7)));
 
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
                               .dayTargetMultiplyer = 7;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetCalories *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetSteps *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .chartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .TargetCaloriesBurning *
                                   Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
                                       .dayTargetMultiplyer;
                         }
                       }),
@@ -514,10 +581,17 @@ class UserMealsList extends State<MealsList> {
             ),
             Flexible(
               child: ListView.builder(
-                itemCount: Provider.of<Data>(context).UserMeals.length,
+                itemCount: Provider.of<Data>(context)
+                    .CaloriesSectionData
+                    .UserMeals
+                    .length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Provider.of<Data>(context).ListDate.day <=
+                  return Provider.of<Data>(context)
+                              .CaloriesSectionData
+                              .ListDate
+                              .day <=
                           DateTime.parse(Provider.of<Data>(context)
+                                  .CaloriesSectionData
                                   .UserMealsDates[index])
                               .day
                       ? Card(
@@ -530,13 +604,14 @@ class UserMealsList extends State<MealsList> {
                           child: ListTile(
                             title: Container(
                               child: Text(Provider.of<Data>(context)
+                                  .CaloriesSectionData
                                   .UserMeals[index]
                                   .name),
                               padding: EdgeInsets.symmetric(horizontal: 10),
                             ),
                             subtitle: Container(
                               child: Text(
-                                  ' calories: ${Provider.of<Data>(context).UserMeals[index].calories} \t\t\t\t\t\t\t\t\t\t\t\t\t\t At ${Provider.of<Data>(context).UserMealsDates[index].toString().substring(0, 10)} '),
+                                  ' calories: ${Provider.of<Data>(context).CaloriesSectionData.UserMeals[index].calories} \t\t\t\t\t\t\t\t\t\t\t\t\t\t At ${Provider.of<Data>(context).CaloriesSectionData.UserMealsDates[index].toString().substring(0, 10)} '),
                             ),
                             trailing: Container(
                               child: IconButton(
@@ -545,16 +620,19 @@ class UserMealsList extends State<MealsList> {
                                   Provider.of<Data>(context, listen: false)
                                       .deletecalo(Provider.of<Data>(context,
                                               listen: false)
+                                          .CaloriesSectionData
                                           .UserMeals[index]
                                           .calories);
                                   Provider.of<Data>(context, listen: false)
                                       .DeleteUserMealsList(Provider.of<Data>(
                                               context,
                                               listen: false)
+                                          .CaloriesSectionData
                                           .UserMeals[index]);
                                   Provider.of<Data>(context, listen: false)
                                       .deleteDate(Provider.of<Data>(context,
                                               listen: false)
+                                          .CaloriesSectionData
                                           .UserMealsDates[index]);
                                   Provider.of<Data>(context, listen: false)
                                       .ChartKepUpDate();
@@ -602,12 +680,21 @@ class UserMealsList extends State<MealsList> {
   void updateUserMeals() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-    docUser.update({
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'calories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsNames,
+      'mealsCalories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsCalories,
     });
   }
 }

@@ -17,14 +17,24 @@ class _AddAmealState extends State<AddAmeal> {
     void updateUserMeals() {
       final docUser = FirebaseFirestore.instance
           .collection('Users')
-          .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-      docUser.update({
-        'calories': Provider.of<Data>(context, listen: false).totalCalories,
-        'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-        'mealsCalories':
-            Provider.of<Data>(context, listen: false).UserMealsCalories,
-        'dateOfTheDay':
-            Provider.of<Data>(context, listen: false).UserMealsDates,
+          .doc(Provider.of<Data>(context, listen: false)
+              .CaloriesSectionData
+              .singedInUser
+              .email)
+          .collection("Data");
+      docUser.doc('CaloriesData').update({
+        'calories': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .totalCalories,
+        'mealsName': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsNames,
+        'mealsCalories': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsCalories,
+        'dateOfTheDay': Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .UserMealsDates,
       });
     }
 
@@ -48,20 +58,29 @@ class _AddAmealState extends State<AddAmeal> {
                 style: TextStyle(fontSize: 18),
                 onChanged: (value) {
                   search = value;
-                  Provider.of<Data>(context, listen: false).Searchmeals.clear();
+                  Provider.of<Data>(context, listen: false)
+                      .CaloriesSectionData
+                      .Searchmeals
+                      .clear();
                   for (var i = 0;
                       i <
                           Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
                               .meals
                               .length;
                       i++) {
                     if (Provider.of<Data>(context, listen: false)
+                        .CaloriesSectionData
                         .meals[i]
                         .name
                         .toLowerCase()
                         .contains(search.toLowerCase())) {
-                      Provider.of<Data>(context, listen: false).Searchmeals.add(
-                          Provider.of<Data>(context, listen: false).meals[i]);
+                      Provider.of<Data>(context, listen: false)
+                          .CaloriesSectionData
+                          .Searchmeals
+                          .add(Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
+                              .meals[i]);
                     }
                   }
                 },
@@ -72,7 +91,10 @@ class _AddAmealState extends State<AddAmeal> {
             child: Container(
               color: Colors.teal[100],
               child: ListView.builder(
-                itemCount: Provider.of<Data>(context).Searchmeals.length,
+                itemCount: Provider.of<Data>(context)
+                    .CaloriesSectionData
+                    .Searchmeals
+                    .length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     shape: RoundedRectangleBorder(
@@ -83,13 +105,15 @@ class _AddAmealState extends State<AddAmeal> {
                         EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 8),
                     child: ListTile(
                       title: Container(
-                        child: Text(
-                            Provider.of<Data>(context).Searchmeals[index].name),
+                        child: Text(Provider.of<Data>(context)
+                            .CaloriesSectionData
+                            .Searchmeals[index]
+                            .name),
                         padding: EdgeInsets.symmetric(horizontal: 10),
                       ),
                       subtitle: Container(
                         child: Text(
-                            ' calories: ${Provider.of<Data>(context).Searchmeals[index].calories}'),
+                            ' calories: ${Provider.of<Data>(context).CaloriesSectionData.Searchmeals[index].calories}'),
                       ),
                       trailing: Container(
                         child: RaisedButton(
@@ -99,12 +123,14 @@ class _AddAmealState extends State<AddAmeal> {
                           onPressed: (() {
                             Provider.of<Data>(context, listen: false).addcalo(
                                 Provider.of<Data>(context, listen: false)
+                                    .CaloriesSectionData
                                     .Searchmeals[index]
                                     .calories);
 
                             Provider.of<Data>(context, listen: false)
                                 .addUserMealsList(
                                     Provider.of<Data>(context, listen: false)
+                                        .CaloriesSectionData
                                         .Searchmeals[index]);
                             Provider.of<Data>(context, listen: false)
                                 .addDates(DateTime.now().toString());

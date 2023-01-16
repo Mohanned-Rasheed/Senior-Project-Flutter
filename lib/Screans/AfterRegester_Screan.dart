@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 
 import 'Calories.dart';
 
+double Weight = 0;
+double Height = 0;
+
 class AfterRegester_Screan extends StatefulWidget {
   const AfterRegester_Screan({Key? key}) : super(key: key);
   static const String ScreanRoute = 'AfterRegester_Screan';
@@ -18,10 +21,6 @@ class AfterRegester_Screan extends StatefulWidget {
 class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
   @override
   Widget build(BuildContext context) {
-    double Weight = 0;
-    double Height = 0;
-    bool WeightFlag = false;
-    bool HeightFlag = false;
     return Scaffold(
       backgroundColor: Colors.teal[800],
       body: Padding(
@@ -57,7 +56,6 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                     }
                   },
                   decoration: InputDecoration(
-                    errorText: WeightFlag ? "Must be Filled" : null,
                     fillColor: Colors.black,
                     hintText: 'Enter Your Weight',
                     hintStyle: TextStyle(color: Colors.white, fontSize: 18),
@@ -97,7 +95,6 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                     }
                   },
                   decoration: InputDecoration(
-                    errorText: HeightFlag ? "Must be Filled" : null,
                     fillColor: Colors.black,
                     hintText: 'Enter Your Height',
                     hintStyle: TextStyle(color: Colors.white),
@@ -147,10 +144,12 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                             return;
                           }
 
-                          Provider.of<Data>(context, listen: false).Weight =
-                              Weight;
-                          Provider.of<Data>(context, listen: false).Height =
-                              Height;
+                          Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
+                              .Weight = Weight;
+                          Provider.of<Data>(context, listen: false)
+                              .CaloriesSectionData
+                              .Height = Height;
                           Provider.of<Data>(context, listen: false)
                               .UpdateWeightAndHeight();
                           Navigator.pushNamed(context, 'AllThree');

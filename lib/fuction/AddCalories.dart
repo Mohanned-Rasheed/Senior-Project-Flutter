@@ -15,13 +15,24 @@ class _AddcaloriesState extends State<Addcalories> {
   void updateUserMeals() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-    docUser.update({
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
-      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'calories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsNames,
+      'mealsCalories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsDates,
     });
   }
 

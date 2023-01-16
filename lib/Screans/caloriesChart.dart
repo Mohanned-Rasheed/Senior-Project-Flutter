@@ -14,10 +14,8 @@ class CaloriesChart extends StatefulWidget {
 }
 
 class _ChartState extends State<CaloriesChart> {
-  late List<chartData> _chartData = Provider.of<Data>(context).CaloriesChart;
-
-  @override
-  void initState() {}
+  late List<chartData> _chartData =
+      Provider.of<Data>(context).CaloriesSectionData.CaloriesChart;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class _ChartState extends State<CaloriesChart> {
         child: SfCircularChart(
           title: ChartTitle(
               text:
-                  'Target Calories ${Provider.of<Data>(context).chartTargetCalories}'),
+                  'Target Calories ${Provider.of<Data>(context, listen: false).CaloriesSectionData.chartTargetCalories}'),
           legend: Legend(
               isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
           margin: EdgeInsets.all(0),
@@ -47,7 +45,10 @@ class _ChartState extends State<CaloriesChart> {
               yValueMapper: (chartData data, _) => data.type,
               dataLabelSettings: DataLabelSettings(isVisible: true),
               maximumValue: double.parse(
-                  Provider.of<Data>(context).chartTargetCalories.toString()),
+                  Provider.of<Data>(context, listen: false)
+                      .CaloriesSectionData
+                      .chartTargetCalories
+                      .toString()),
             )
           ],
         ),

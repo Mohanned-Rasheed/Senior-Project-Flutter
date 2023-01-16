@@ -85,104 +85,224 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     List<List<dynamic>> _listData = CsvToListConverter().convert(_rawData);
 
     for (var i = 1; i < _listData.length; i++) {
-      Provider.of<Data>(context, listen: false).meals.add(Meals(
-          _listData[i][0].toString(), int.parse(_listData[i][1].toString())));
+      Provider.of<Data>(context, listen: false).CaloriesSectionData.meals.add(
+          Meals(_listData[i][0].toString(),
+              int.parse(_listData[i][1].toString())));
 
-      Provider.of<Data>(context, listen: false).Searchmeals.add(Meals(
-          _listData[i][0].toString(), int.parse(_listData[i][1].toString())));
+      Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .Searchmeals
+          .add(Meals(_listData[i][0].toString(),
+              int.parse(_listData[i][1].toString())));
     }
   }
 
   void updateSteps() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-    docUser.update({
-      'steps': Provider.of<Data>(context, listen: false).steps,
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'steps':
+          Provider.of<Data>(context, listen: false).CaloriesSectionData.steps,
     });
   }
 
   void getDataAtFirst() async {
-    CollectionReference userref =
-        FirebaseFirestore.instance.collection('Users');
-    await userref.get().then((value) {
-      value.docs.forEach((element) {
-        if (element.get("email") ==
-            Provider.of<Data>(context, listen: false).singedInUser.email) {
-          setState(() {
-            Provider.of<Data>(context, listen: false).CaloriesChart[0].type =
-                element.get("calories");
+    // CollectionReference userref =
+    //     FirebaseFirestore.instance.collection('Users');
 
-            Provider.of<Data>(context, listen: false).StepsChart[0].type =
-                element.get("steps");
+    CollectionReference userref = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    await userref.doc('CaloriesData').get().then((element) => {
+          setState(() {
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .CaloriesChart[0]
+                .type = element.get("calories");
 
             Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .StepsChart[0]
+                .type = element.get("steps");
+
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
                 .CaloriesBurntChart[0]
                 .type = element.get("caloriesBurnt");
 
-            Provider.of<Data>(context, listen: false).totalCalories =
-                element.get("calories");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .totalCalories = element.get("calories");
 
-            Provider.of<Data>(context, listen: false).TargetCalories =
-                element.get("caloriesTarget");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .TargetCalories = element.get("caloriesTarget");
 
-            Provider.of<Data>(context, listen: false).steps =
-                element.get("steps");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .steps = element.get("steps");
 
-            Provider.of<Data>(context, listen: false).TargetSteps =
-                element.get("TargetSteps");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .TargetSteps = element.get("TargetSteps");
 
-            Provider.of<Data>(context, listen: false).caloriesBurnt =
-                element.get("caloriesBurnt");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .caloriesBurnt = element.get("caloriesBurnt");
 
-            Provider.of<Data>(context, listen: false).TargetCaloriesBurning =
-                element.get("TargetCaloriesBurning");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .TargetCaloriesBurning = element.get("TargetCaloriesBurning");
 
-            Provider.of<Data>(context, listen: false).UserMealsNames =
-                element.get("mealsName");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .UserMealsNames = element.get("mealsName");
 
-            Provider.of<Data>(context, listen: false).UserMealsCalories =
-                element.get("mealsCalories");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .UserMealsCalories = element.get("mealsCalories");
 
-            Provider.of<Data>(context, listen: false).UserMealsDates =
-                element.get("dateOfTheDay");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .UserMealsDates = element.get("dateOfTheDay");
 
             // if (true) {
             // Notification.sendNotification('this is title', 'this is body');
             //   }
-          });
-          if (Provider.of<Data>(context, listen: false).UserMealsNames.length !=
-              Provider.of<Data>(context, listen: false).UserMeals.length) {
-            Provider.of<Data>(context, listen: false).UserMeals.clear();
-            for (var i = 0;
-                i <
+            if (Provider.of<Data>(context, listen: false)
+                    .CaloriesSectionData
+                    .UserMealsNames
+                    .length !=
+                Provider.of<Data>(context, listen: false)
+                    .CaloriesSectionData
+                    .UserMeals
+                    .length) {
+              Provider.of<Data>(context, listen: false)
+                  .CaloriesSectionData
+                  .UserMeals
+                  .clear();
+              for (var i = 0;
+                  i <
+                      Provider.of<Data>(context, listen: false)
+                          .CaloriesSectionData
+                          .UserMealsNames
+                          .length;
+                  i++) {
+                Meals meal = Meals(
                     Provider.of<Data>(context, listen: false)
-                        .UserMealsNames
-                        .length;
-                i++) {
-              Meals meal = Meals(
-                  Provider.of<Data>(context, listen: false).UserMealsNames[i],
-                  Provider.of<Data>(context, listen: false)
-                      .UserMealsCalories[i]);
-              Provider.of<Data>(context, listen: false).UserMeals.add(meal);
+                        .CaloriesSectionData
+                        .UserMealsNames[i],
+                    Provider.of<Data>(context, listen: false)
+                        .CaloriesSectionData
+                        .UserMealsCalories[i]);
+                Provider.of<Data>(context, listen: false)
+                    .CaloriesSectionData
+                    .UserMeals
+                    .add(meal);
+              }
             }
-          }
-        }
-      });
-    });
+          })
+        });
+
+    // await userref.get().then((value) {
+    //   value.docs.forEach((element) {
+    //     if (element.get("email") ==
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .singedInUser
+    //             .email) {
+    //       setState(() {
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .CaloriesChart[0]
+    //             .type = element.get("calories");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .StepsChart[0]
+    //             .type = element.get("steps");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .CaloriesBurntChart[0]
+    //             .type = element.get("caloriesBurnt");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .totalCalories = element.get("calories");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .TargetCalories = element.get("caloriesTarget");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .steps = element.get("steps");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .TargetSteps = element.get("TargetSteps");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .caloriesBurnt = element.get("caloriesBurnt");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .TargetCaloriesBurning = element.get("TargetCaloriesBurning");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .UserMealsNames = element.get("mealsName");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .UserMealsCalories = element.get("mealsCalories");
+
+    //         Provider.of<Data>(context, listen: false)
+    //             .CaloriesSectionData
+    //             .UserMealsDates = element.get("dateOfTheDay");
+
+    //         // if (true) {
+    //         // Notification.sendNotification('this is title', 'this is body');
+    //         //   }
+    //       });
+    //     }
+    //   });
+    // });
     Provider.of<Data>(context, listen: false).ChartKepUpDateAtFirst();
   }
 
   void updateUserMeals() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false).singedInUser.email);
-    docUser.update({
-      'calories': Provider.of<Data>(context, listen: false).totalCalories,
-      'mealsName': Provider.of<Data>(context, listen: false).UserMealsNames,
-      'mealsCalories':
-          Provider.of<Data>(context, listen: false).UserMealsCalories,
-      'dateOfTheDay': Provider.of<Data>(context, listen: false).UserMealsDates,
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'calories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .totalCalories,
+      'mealsName': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsNames,
+      'mealsCalories': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .CaloriesSectionData
+          .UserMealsDates,
     });
   }
 
@@ -220,7 +340,9 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     try {
       final user = _auth.currentUser;
       if (user != null) {
-        Provider.of<Data>(context, listen: false).singedInUser = user;
+        Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser = user;
       }
     } catch (e) {
       print(e);
@@ -228,15 +350,29 @@ class _CaloriesSectionState extends State<CaloriesSection> {
   }
 
   void userLogout() {
-    Provider.of<Data>(context, listen: false).UserMealsNames = [];
-    Provider.of<Data>(context, listen: false).UserMealsCalories = [];
-    Provider.of<Data>(context, listen: false).UserMeals = [];
-    Provider.of<Data>(context, listen: false).UserMealsDates = [];
-    Provider.of<Data>(context, listen: false).totalCalories = 0;
-    Provider.of<Data>(context, listen: false).steps = 0;
-    Provider.of<Data>(context, listen: false).TargetCalories = 2000;
-    Provider.of<Data>(context, listen: false).TargetSteps = 5000;
-    Provider.of<Data>(context, listen: false).TargetCaloriesBurning = 100;
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .UserMealsNames = [];
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .UserMealsCalories = [];
+    Provider.of<Data>(context, listen: false).CaloriesSectionData.UserMeals =
+        [];
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .UserMealsDates = [];
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .totalCalories = 0;
+    Provider.of<Data>(context, listen: false).CaloriesSectionData.steps = 0;
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .TargetCalories = 2000;
+    Provider.of<Data>(context, listen: false).CaloriesSectionData.TargetSteps =
+        5000;
+    Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .TargetCaloriesBurning = 100;
 
     _auth.signOut();
     Navigator.pushNamed(context, WelcomeScrean.ScreanRoute);
@@ -281,7 +417,7 @@ class _CaloriesSectionState extends State<CaloriesSection> {
         backgroundColor: Colors.teal[200],
         body: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height * 1.3,
+            height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.only(top: 25, bottom: 20),
             child: Column(
@@ -398,41 +534,55 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                             .updateSteps(snapshot.value);
                         updateSteps();
 
-                        if (Provider.of<Data>(context, listen: false).Height >
+                        if (Provider.of<Data>(context, listen: false)
+                                .CaloriesSectionData
+                                .Height >
                             180) {
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .CaloriesBurntChart[0]
                                   .type =
                               ((Provider.of<Data>(context, listen: false)
+                                              .CaloriesSectionData
                                               .Weight /
                                           1666) *
                                       Provider.of<Data>(context, listen: false)
+                                          .CaloriesSectionData
                                           .steps)
                                   .floor();
                         } else if (Provider.of<Data>(context, listen: false)
+                                    .CaloriesSectionData
                                     .Height >
                                 167 &&
-                            Provider.of<Data>(context, listen: false).Height <
+                            Provider.of<Data>(context, listen: false)
+                                    .CaloriesSectionData
+                                    .Height <
                                 188) {
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .CaloriesBurntChart[0]
                                   .type =
                               (((Provider.of<Data>(context, listen: false)
+                                                  .CaloriesSectionData
                                                   .Weight /
                                               1666) *
                                           0.914) *
                                       Provider.of<Data>(context, listen: false)
+                                          .CaloriesSectionData
                                           .steps)
                                   .floor();
                         } else {
                           Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
                                   .CaloriesBurntChart[0]
                                   .type =
                               (((Provider.of<Data>(context, listen: false)
+                                                  .CaloriesSectionData
                                                   .Weight /
                                               1666) *
                                           0.837) *
                                       Provider.of<Data>(context, listen: false)
+                                          .CaloriesSectionData
                                           .steps)
                                   .floor();
                         }

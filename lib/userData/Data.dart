@@ -3,69 +3,77 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:healthreminder1/WaterSection/models/Water.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:healthreminder1/models/chartData.dart';
 
+import '../ClassDiagram/CaloriesSection.dart';
+
 class Data extends ChangeNotifier {
-  dynamic totalCalories = 0;
-  var TargetCalories = 2000;
-  var chartTargetCalories =
-      2000; //this used to present the calories in the chart and seoritae the acculy target to mange target in diffrent form
-
-  dynamic steps = 0;
-  var TargetSteps = 5000;
-  var chartTargetSteps = 5000;
-
-  dynamic caloriesBurnt = 0;
-  var TargetCaloriesBurning = 100;
-  var chartTargetCaloriesBurning = 100;
-
-  double Weight = 0;
-  double Height = 0;
-
-  late User singedInUser;
-
-  int dayTargetMultiplyer =
-      1; //this is used to change target calories in the chart dynmic when the user change the days in the list it changes to the day its selected
+  dynamic TotalWaterPortion = 0;
+  dynamic WaterTarget = 1500;
+  List<Water> UserWaterList = [];
   DateTime ListDate = DateTime.now();
-
-  List<dynamic> UserMealsDates = [];
-  List<dynamic> UserMealsNames = [];
-  List<dynamic> UserMealsCalories = [];
-  List<Meals> UserMeals = [];
-
-  List<chartData> CaloriesChart = [
-    chartData('totalCalories', 0),
+  List<Water> WaterList = [Water(330, DateTime.now().toString())];
+  List<chartData> WaterChart = [
+    chartData(' Total Water\n Consumpstion', 0),
   ];
-  List<chartData> StepsChart = [
-    chartData('steps', 0),
-  ];
-  List<chartData> CaloriesBurntChart = [
-    chartData('CaloriesBurnt', 0),
-  ];
+  //Water Section Methods ////////////////////////////////////////////////////////
+  void AddWater(Water newWater) {
+    TotalWaterPortion = TotalWaterPortion + newWater.amount;
+    UserWaterList.add(newWater);
+    WaterChart[0].type = TotalWaterPortion;
+    notifyListeners();
+  }
 
-  List<Meals> meals = [];
-  List<Meals> Searchmeals = [];
+  void DeleteWater(Water newWater) {
+    TotalWaterPortion = TotalWaterPortion - newWater.amount;
+    UserWaterList.remove(newWater);
+    WaterChart[0].type = TotalWaterPortion;
+    notifyListeners();
+  }
+
+  void UpdateWaterTarget(dynamic NewTarget) {
+    WaterTarget = NewTarget;
+    notifyListeners();
+  }
+
+  void UpdateWaterData() {
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(CaloriesSectionData.singedInUser.email)
+        .collection("Data");
+    docUser.doc('WaterData').update({
+      'Weight': CaloriesSectionData.Weight,
+      'Height': CaloriesSectionData.Height,
+    });
+  }
+
+  //Calorie Section Methods ////////////////////////////////////////////////////////
+  CaloriesSection CaloriesSectionData = CaloriesSection();
   void addcalo(int newcal) {
-    totalCalories = totalCalories + newcal;
+    CaloriesSectionData.totalCalories =
+        CaloriesSectionData.totalCalories + newcal;
     notifyListeners();
   }
 
   void newCaloChart(int newCaloChart) {
-    CaloriesChart[0].type = newCaloChart;
+    CaloriesSectionData.CaloriesChart[0].type = newCaloChart;
     notifyListeners();
   }
 
   void deletecalo(int newcal) {
-    totalCalories = totalCalories - newcal;
-    CaloriesChart[0].type = totalCalories;
+    CaloriesSectionData.totalCalories =
+        CaloriesSectionData.totalCalories - newcal;
+    CaloriesSectionData.CaloriesChart[0].type =
+        CaloriesSectionData.totalCalories;
     notifyListeners();
   }
 
   void updateSteps(dynamic newSteps) async {
-    if (newSteps != steps) {
-      steps = newSteps;
-      StepsChart[0].type = steps;
+    if (newSteps != CaloriesSectionData.steps) {
+      CaloriesSectionData.steps = newSteps;
+      CaloriesSectionData.StepsChart[0].type = CaloriesSectionData.steps;
       await Future.delayed(Duration(microseconds: 150));
       // ChartData[1].type = steps;
       notifyListeners();
@@ -73,53 +81,67 @@ class Data extends ChangeNotifier {
   }
 
   void addUserMealsList(Meals newMeal) {
-    UserMeals.add(newMeal);
-    UserMealsNames.add(newMeal.name);
-    UserMealsCalories.add(newMeal.calories);
+    CaloriesSectionData.UserMeals.add(newMeal);
+    CaloriesSectionData.UserMealsNames.add(newMeal.name);
+    CaloriesSectionData.UserMealsCalories.add(newMeal.calories);
     notifyListeners();
   }
 
   void DeleteUserMealsList(Meals newMeal) {
-    UserMeals.remove(newMeal);
-    UserMealsNames.remove(newMeal.name);
-    UserMealsCalories.remove(newMeal.calories);
+    CaloriesSectionData.UserMeals.remove(newMeal);
+    CaloriesSectionData.UserMealsNames.remove(newMeal.name);
+    CaloriesSectionData.UserMealsCalories.remove(newMeal.calories);
     notifyListeners();
   }
 
   void updateCaloTarget(var newTarget) {
-    TargetCalories = newTarget;
-    chartTargetCalories = TargetCalories * dayTargetMultiplyer;
+    CaloriesSectionData.TargetCalories = newTarget;
+    CaloriesSectionData.chartTargetCalories =
+        CaloriesSectionData.TargetCalories *
+            CaloriesSectionData.dayTargetMultiplyer;
+    notifyListeners();
+  }
+
+  void updateStepsTarget(var newTarget) {
+    CaloriesSectionData.TargetSteps = newTarget;
+    CaloriesSectionData.chartTargetSteps = CaloriesSectionData.TargetSteps *
+        CaloriesSectionData.dayTargetMultiplyer;
+    notifyListeners();
+  }
+
+  void updateCaloBurningTarget(var newTarget) {
+    CaloriesSectionData.TargetCaloriesBurning = newTarget;
+    CaloriesSectionData.chartTargetCaloriesBurning =
+        CaloriesSectionData.TargetCaloriesBurning *
+            CaloriesSectionData.dayTargetMultiplyer;
     notifyListeners();
   }
 
   void addDates(String date) {
-    UserMealsDates.add(date);
+    CaloriesSectionData.UserMealsDates.add(date);
     notifyListeners();
   }
 
   void deleteDate(String date) {
-    UserMealsDates.remove(date);
+    CaloriesSectionData.UserMealsDates.remove(date);
     notifyListeners();
   }
 
   void updateUser() {
-    final docUser =
-        FirebaseFirestore.instance.collection('Users').doc(singedInUser.email);
-    docUser.update({
-      'calories': totalCalories,
-      'mealsName': UserMealsNames,
-      'mealsCalories': UserMealsCalories,
-      'dateOfTheDay': UserMealsDates,
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(CaloriesSectionData.singedInUser.email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'calories': CaloriesSectionData.totalCalories,
+      'mealsName': CaloriesSectionData.UserMealsNames,
+      'mealsCalories': CaloriesSectionData.UserMealsCalories,
+      'dateOfTheDay': CaloriesSectionData.UserMealsDates,
     });
   }
 
-  void caloriesChartDate() {
-    CaloriesChart[0].type = 0;
-    notifyListeners();
-  }
-
   void changeListDate(DateTime newListDate) {
-    ListDate = newListDate;
+    CaloriesSectionData.ListDate = newListDate;
     notifyListeners();
   }
 
@@ -127,9 +149,11 @@ class Data extends ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 1000));
 
     int tempTotalCalories = 0;
-    for (var i = 0; i < UserMealsCalories.length; i++) {
-      if (ListDate.day <= DateTime.parse(UserMealsDates[i]).day) {
-        tempTotalCalories = tempTotalCalories + UserMealsCalories[i] as int;
+    for (var i = 0; i < CaloriesSectionData.UserMealsCalories.length; i++) {
+      if (CaloriesSectionData.ListDate.day <=
+          DateTime.parse(CaloriesSectionData.UserMealsDates[i]).day) {
+        tempTotalCalories =
+            tempTotalCalories + CaloriesSectionData.UserMealsCalories[i] as int;
       }
     }
 
@@ -138,9 +162,11 @@ class Data extends ChangeNotifier {
 
   void ChartKepUpDate() {
     int tempTotalCalories = 0;
-    for (var i = 0; i < UserMealsCalories.length; i++) {
-      if (ListDate.day <= DateTime.parse(UserMealsDates[i]).day) {
-        tempTotalCalories = tempTotalCalories + UserMealsCalories[i] as int;
+    for (var i = 0; i < CaloriesSectionData.UserMealsCalories.length; i++) {
+      if (CaloriesSectionData.ListDate.day <=
+          DateTime.parse(CaloriesSectionData.UserMealsDates[i]).day) {
+        tempTotalCalories =
+            tempTotalCalories + CaloriesSectionData.UserMealsCalories[i] as int;
       }
     }
 
@@ -148,11 +174,13 @@ class Data extends ChangeNotifier {
   }
 
   void UpdateWeightAndHeight() {
-    final docUser =
-        FirebaseFirestore.instance.collection('Users').doc(singedInUser.email);
-    docUser.update({
-      'Weight': Weight,
-      'Height': Height,
+    final docUser = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(CaloriesSectionData.singedInUser.email)
+        .collection("Data");
+    docUser.doc('CaloriesData').update({
+      'Weight': CaloriesSectionData.Weight,
+      'Height': CaloriesSectionData.Height,
     });
   }
 }

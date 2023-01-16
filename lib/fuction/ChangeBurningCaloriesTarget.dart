@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import '../userData/Data.dart';
 import 'package:provider/provider.dart';
 
-class ChangeCaloriesTarget extends StatefulWidget {
+class ChangeBurningCaloriesTarget extends StatefulWidget {
   @override
-  State<ChangeCaloriesTarget> createState() => _ChangeCaloriesTarget();
+  State<ChangeBurningCaloriesTarget> createState() => _ChangeCaloriesTarget();
 }
 
-class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
+class _ChangeCaloriesTarget extends State<ChangeBurningCaloriesTarget> {
   int NewTarget = 0;
 
-  void updateCaloriesTarget() {
+  void updateCaloriesBurningTarget() {
     setState(() {
       final docUser = FirebaseFirestore.instance
           .collection('Users')
@@ -21,9 +21,9 @@ class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
               .email)
           .collection("Data");
       docUser.doc('CaloriesData').update({
-        'caloriesTarget': Provider.of<Data>(context, listen: false)
+        'TargetCaloriesBurning': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .TargetCalories,
+            .TargetCaloriesBurning,
       });
     });
   }
@@ -58,8 +58,8 @@ class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
             onPressed: () {
               try {
                 Provider.of<Data>(context, listen: false)
-                    .updateCaloTarget(NewTarget);
-                updateCaloriesTarget();
+                    .updateCaloBurningTarget(NewTarget);
+                updateCaloriesBurningTarget();
               } catch (e) {
                 print(e);
               }

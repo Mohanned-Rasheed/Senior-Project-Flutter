@@ -4,7 +4,7 @@ import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/Screans/Register_Screan.dart';
 import 'package:healthreminder1/Screans/Sginin_Screan.dart';
 import 'package:healthreminder1/Screans/Sleep.dart';
-import 'package:healthreminder1/Screans/Water.dart';
+import 'package:healthreminder1/WaterSection/WaterScrean.dart';
 import 'package:healthreminder1/Screans/Welcome_Screan.dart';
 import 'Screans/Calories.dart';
 import 'package:provider/provider.dart';
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
           return Scaffold(
             body: pages[index],
             bottomNavigationBar: NavigationBar(
-              backgroundColor: Colors.greenAccent,
+              backgroundColor: Colors.black12,
               selectedIndex: index,
               onDestinationSelected: (index) => setState(() {
                 this.index = index;

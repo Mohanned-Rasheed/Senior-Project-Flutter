@@ -1,33 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-import '../userData/Data.dart';
+import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
-class ChangeCaloriesTarget extends StatefulWidget {
+class ChangeWaterTarget extends StatefulWidget {
+  const ChangeWaterTarget({Key? key}) : super(key: key);
+
   @override
-  State<ChangeCaloriesTarget> createState() => _ChangeCaloriesTarget();
+  State<ChangeWaterTarget> createState() => _ChangeWaterTargetState();
 }
 
-class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
-  int NewTarget = 0;
-
-  void updateCaloriesTarget() {
-    setState(() {
-      final docUser = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(Provider.of<Data>(context, listen: false)
-              .CaloriesSectionData
-              .singedInUser
-              .email)
-          .collection("Data");
-      docUser.doc('CaloriesData').update({
-        'caloriesTarget': Provider.of<Data>(context, listen: false)
-            .CaloriesSectionData
-            .TargetCalories,
-      });
-    });
-  }
-
+class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
+  late var NewTarget;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,8 +43,8 @@ class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
             onPressed: () {
               try {
                 Provider.of<Data>(context, listen: false)
-                    .updateCaloTarget(NewTarget);
-                updateCaloriesTarget();
+                    .UpdateWaterTarget(NewTarget);
+                //updateCaloriesTarget();
               } catch (e) {
                 print(e);
               }
