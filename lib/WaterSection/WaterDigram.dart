@@ -17,7 +17,8 @@ class WaterDigram extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<WaterDigram> {
-  late List<chartData> _chartData = Provider.of<Data>(context).WaterChart;
+  late List<chartData> _chartData =
+      Provider.of<Data>(context).WaterSectionData.WaterChart;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +28,7 @@ class _MyWidgetState extends State<WaterDigram> {
       child: SfCircularChart(
         title: ChartTitle(
             text:
-                'Water Target ${Provider.of<Data>(context, listen: false).WaterTarget}ml'),
+                'Water Target ${Provider.of<Data>(context, listen: false).WaterSectionData.chartWaterTarget}ml'),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
         margin: EdgeInsets.all(0),
@@ -42,7 +43,8 @@ class _MyWidgetState extends State<WaterDigram> {
             yValueMapper: (chartData data, _) => data.type,
             dataLabelSettings: DataLabelSettings(isVisible: true),
             maximumValue: double.parse(Provider.of<Data>(context, listen: false)
-                .WaterTarget
+                .WaterSectionData
+                .chartWaterTarget
                 .toString()),
           )
         ],

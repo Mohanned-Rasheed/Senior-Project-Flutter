@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:healthreminder1/models/ShowErrorMessage.dart';
 import '../userData/Data.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +10,7 @@ class ChangeCaloriesTarget extends StatefulWidget {
 }
 
 class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
-  int NewTarget = 0;
+  late String NewTarget;
 
   void updateCaloriesTarget() {
     setState(() {
@@ -48,7 +49,7 @@ class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
             autofocus: true,
             textAlign: TextAlign.center,
             onChanged: (newTarget) {
-              NewTarget = int.parse(newTarget);
+              this.NewTarget = newTarget;
             },
           ),
           SizedBox(
@@ -56,12 +57,13 @@ class _ChangeCaloriesTarget extends State<ChangeCaloriesTarget> {
           ),
           TextButton(
             onPressed: () {
-              try {
+              if (int.tryParse(NewTarget) != null) {
                 Provider.of<Data>(context, listen: false)
                     .updateCaloTarget(NewTarget);
                 updateCaloriesTarget();
-              } catch (e) {
-                print(e);
+              } else {
+                ShowErrorMessage(context, 'Wrong Calories Target Input',
+                    'Please Enter Your Calories Target as Numbers', 75);
               }
 
               Navigator.pop(context);

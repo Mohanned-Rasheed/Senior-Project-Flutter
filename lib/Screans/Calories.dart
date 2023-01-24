@@ -80,20 +80,25 @@ class _CaloriesSectionState extends State<CaloriesSection> {
   }
 
   void _loadCSV() async {
-    final _rawData =
-        await rootBundle.loadString("assets/Food_and_Calories_-_Sheet1.csv");
-    List<List<dynamic>> _listData = CsvToListConverter().convert(_rawData);
+    if (Provider.of<Data>(context, listen: false)
+        .CaloriesSectionData
+        .meals
+        .isEmpty) {
+      final _rawData =
+          await rootBundle.loadString("assets/Food_and_Calories_-_Sheet1.csv");
+      List<List<dynamic>> _listData = CsvToListConverter().convert(_rawData);
 
-    for (var i = 1; i < _listData.length; i++) {
-      Provider.of<Data>(context, listen: false).CaloriesSectionData.meals.add(
-          Meals(_listData[i][0].toString(),
-              int.parse(_listData[i][1].toString())));
+      for (var i = 1; i < _listData.length; i++) {
+        Provider.of<Data>(context, listen: false).CaloriesSectionData.meals.add(
+            Meals(_listData[i][0].toString(),
+                int.parse(_listData[i][1].toString())));
 
-      Provider.of<Data>(context, listen: false)
-          .CaloriesSectionData
-          .Searchmeals
-          .add(Meals(_listData[i][0].toString(),
-              int.parse(_listData[i][1].toString())));
+        Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .Searchmeals
+            .add(Meals(_listData[i][0].toString(),
+                int.parse(_listData[i][1].toString())));
+      }
     }
   }
 
@@ -174,7 +179,12 @@ class _CaloriesSectionState extends State<CaloriesSection> {
             Provider.of<Data>(context, listen: false)
                 .CaloriesSectionData
                 .UserMealsDates = element.get("dateOfTheDay");
-
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .Height = element.get("Height");
+            Provider.of<Data>(context, listen: false)
+                .CaloriesSectionData
+                .Weight = element.get("Weight");
             // if (true) {
             // Notification.sendNotification('this is title', 'this is body');
             //   }
@@ -280,6 +290,7 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     //   });
     // });
     Provider.of<Data>(context, listen: false).ChartKepUpDateAtFirst();
+    Provider.of<Data>(context, listen: false).ListAtFirst();
   }
 
   void updateUserMeals() {
@@ -373,7 +384,8 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     Provider.of<Data>(context, listen: false)
         .CaloriesSectionData
         .TargetCaloriesBurning = 100;
-
+    Provider.of<Data>(context, listen: false).CaloriesSectionData.Height = 0;
+    Provider.of<Data>(context, listen: false).CaloriesSectionData.Weight = 0;
     _auth.signOut();
     Navigator.pushNamed(context, WelcomeScrean.ScreanRoute);
   }

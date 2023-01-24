@@ -25,8 +25,10 @@ class _AddWaterState extends State<AddWater> {
             child: Container(
               color: Colors.teal[100],
               child: ListView.builder(
-                itemCount:
-                    Provider.of<Data>(context, listen: false).WaterList.length,
+                itemCount: Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .WaterList
+                    .length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     shape: RoundedRectangleBorder(
@@ -37,15 +39,19 @@ class _AddWaterState extends State<AddWater> {
                         EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 8),
                     child: ListTile(
                       title: Container(
-                        child: Text("a"),
+                        child: Text(''),
                         padding: EdgeInsets.symmetric(horizontal: 10),
                       ),
                       subtitle: Container(
-                        child: Text(Provider.of<Data>(context, listen: false)
-                                .WaterList[index]
-                                .amount
-                                .toString() +
-                            ' ml'),
+                        child: Text(
+                          Provider.of<Data>(context, listen: false)
+                                  .WaterSectionData
+                                  .WaterList[index]
+                                  .amount
+                                  .toString() +
+                              ' ml ',
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
                       trailing: Container(
                         child: RaisedButton(
@@ -56,9 +62,11 @@ class _AddWaterState extends State<AddWater> {
                             Provider.of<Data>(context, listen: false).AddWater(
                                 Water(
                                     Provider.of<Data>(context, listen: false)
+                                        .WaterSectionData
                                         .WaterList[index]
                                         .amount,
                                     Provider.of<Data>(context, listen: false)
+                                        .WaterSectionData
                                         .WaterList[index]
                                         .date));
                           }),

@@ -1,6 +1,7 @@
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
+import 'package:healthreminder1/models/ShowErrorMessage.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ class ChangeWaterTarget extends StatefulWidget {
 }
 
 class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
-  late var NewTarget;
+  late String NewTarget;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +23,7 @@ class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
         children: [
           Text(
             textAlign: TextAlign.center,
-            'Enter the New Target',
+            'Enter the New Water Target',
             style: TextStyle(
                 fontSize: 25,
                 color: Colors.indigo[400],
@@ -33,7 +34,7 @@ class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
             autofocus: true,
             textAlign: TextAlign.center,
             onChanged: (newTarget) {
-              NewTarget = int.parse(newTarget);
+              this.NewTarget = newTarget;
             },
           ),
           SizedBox(
@@ -41,12 +42,12 @@ class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
           ),
           TextButton(
             onPressed: () {
-              try {
+              if (int.tryParse(NewTarget) != null) {
                 Provider.of<Data>(context, listen: false)
                     .UpdateWaterTarget(NewTarget);
-                //updateCaloriesTarget();
-              } catch (e) {
-                print(e);
+              } else {
+                ShowErrorMessage(context, 'Wrong Water Target Input',
+                    'Please Make Sure Its Only Number', 75);
               }
 
               Navigator.pop(context);

@@ -1,12 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/WaterSection/function/AddWater.dart';
 import 'package:healthreminder1/WaterSection/function/ChangeWaterTarget.dart';
-import 'package:healthreminder1/fuction/AddAmeal.dart';
-import 'package:healthreminder1/fuction/AddCalories.dart';
-import 'package:healthreminder1/fuction/TargetChanger.dart';
+import 'package:healthreminder1/WaterSection/models/Water.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +14,72 @@ class UserWaterList extends StatefulWidget {
 }
 
 class _UserWaterListState extends State<UserWaterList> {
+  initState() {
+    getDataAtFirst();
+  }
+
+  void getDataAtFirst() async {
+    CollectionReference userref = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .singedInUser
+            .email)
+        .collection("Data");
+    await userref.doc('WaterData').get().then((element) => {
+          setState(() {
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .TotalWaterPortion = element.get("TotalWaterPortion");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .WaterTarget = element.get("WaterTarget");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .UserWaterListDates = element.get("DatesUserWaterList");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .UserWaterListAmount = element.get("UserWaterListAmount");
+
+            if (Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .UserWaterListAmount
+                    .length !=
+                Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .UserWaterList
+                    .length) {
+              Provider.of<Data>(context, listen: false)
+                  .WaterSectionData
+                  .UserWaterList
+                  .clear();
+              for (var i = 0;
+                  i <
+                      Provider.of<Data>(context, listen: false)
+                          .WaterSectionData
+                          .UserWaterListAmount
+                          .length;
+                  i++) {
+                Water water = Water(
+                    Provider.of<Data>(context, listen: false)
+                        .WaterSectionData
+                        .UserWaterListAmount[i],
+                    Provider.of<Data>(context, listen: false)
+                        .WaterSectionData
+                        .UserWaterListDates[i]);
+                Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .UserWaterList
+                    .add(water);
+              }
+            }
+          })
+        });
+
+    Provider.of<Data>(context, listen: false).WaterChartKepUpDateAtFirst();
+    Provider.of<Data>(context, listen: false).SelectWaterDay(DateTime.now(), 1);
+  }
+
   List<String> itemList = ['today', 'last 3 days', 'last week'];
   String selectedItem = 'today';
   @override
@@ -186,8 +248,17 @@ class _UserWaterListState extends State<UserWaterList> {
                     onChanged: (item) => setState(() {
                       selectedItem = item!;
                       if (selectedItem == 'today') {
+                        Provider.of<Data>(context, listen: false)
+                            .SelectWaterDay(DateTime.now(), 1);
                       } else if (selectedItem == 'last 3 days') {
-                      } else if (selectedItem == 'last week') {}
+                        Provider.of<Data>(context, listen: false)
+                            .SelectWaterDay(
+                                DateTime.now().subtract(Duration(days: 3)), 3);
+                      } else if (selectedItem == 'last week') {
+                        Provider.of<Data>(context, listen: false)
+                            .SelectWaterDay(
+                                DateTime.now().subtract(Duration(days: 7)), 7);
+                      }
                     }),
                   ),
                 ),
@@ -196,10 +267,17 @@ class _UserWaterListState extends State<UserWaterList> {
           ),
           Flexible(
             child: ListView.builder(
-              itemCount: Provider.of<Data>(context).UserWaterList.length,
+              itemCount: Provider.of<Data>(context)
+                  .WaterSectionData
+                  .UserWaterList
+                  .length,
               itemBuilder: (BuildContext context, int index) {
-                return Provider.of<Data>(context).ListDate.day <=
+                return Provider.of<Data>(context)
+                            .WaterSectionData
+                            .WaterListDate
+                            .day <=
                         DateTime.parse(Provider.of<Data>(context)
+                                .WaterSectionData
                                 .UserWaterList[index]
                                 .date)
                             .day
@@ -213,12 +291,21 @@ class _UserWaterListState extends State<UserWaterList> {
                         child: ListTile(
                           title: Container(
                             child: Text(Provider.of<Data>(context)
+                                    .WaterSectionData
                                     .UserWaterList[index]
                                     .amount
                                     .toString() +
-                                ' ml'),
+                                ' ml\t\t\t\t\t'),
                             padding: EdgeInsets.symmetric(horizontal: 10),
                           ),
+                          subtitle: Text('\t\t' +
+                              'At \t' +
+                              Provider.of<Data>(context)
+                                  .WaterSectionData
+                                  .UserWaterList[index]
+                                  .date
+                                  .toString()
+                                  .substring(0, 10)),
                           trailing: Container(
                             child: IconButton(
                               icon: Icon(Icons.delete),
@@ -226,6 +313,7 @@ class _UserWaterListState extends State<UserWaterList> {
                                 Provider.of<Data>(context, listen: false)
                                     .DeleteWater(Provider.of<Data>(context,
                                             listen: false)
+                                        .WaterSectionData
                                         .UserWaterList[index]);
                               }),
                             ),

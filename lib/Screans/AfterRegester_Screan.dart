@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:healthreminder1/models/ShowErrorMessage.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
@@ -131,16 +132,18 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                       onPressed: () {
                         try {
                           if (Weight == null || Weight <= 0) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'Please Enter Your Weight make sure it\'s Positve Value'),
-                            ));
+                            ShowErrorMessage(
+                                context,
+                                'Wrong Weight Input',
+                                'Please Enter Your Weight make sure it\'s Positve Value',
+                                75);
                             return;
                           } else if (Height == null || Height <= 0) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'Please Enter Your Height make sure it\'s Positve Value'),
-                            ));
+                            ShowErrorMessage(
+                                context,
+                                'Wrong Height Input',
+                                'Please Enter Your Height make sure it\'s Positve Value',
+                                75);
                             return;
                           }
 
@@ -154,10 +157,11 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                               .UpdateWeightAndHeight();
                           Navigator.pushNamed(context, 'AllThree');
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                'Please Enter Your Weight and Height as Numbers'),
-                          ));
+                          ShowErrorMessage(
+                              context,
+                              'Wrong Height and Weight Input',
+                              'Please Enter Your Weight and Height as Numbers',
+                              75);
                         }
                       },
                       minWidth: 200,

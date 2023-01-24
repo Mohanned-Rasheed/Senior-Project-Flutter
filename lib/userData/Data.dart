@@ -3,6 +3,7 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:healthreminder1/ClassDiagram/WaterSection.dart';
 import 'package:healthreminder1/WaterSection/models/Water.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:healthreminder1/models/chartData.dart';
@@ -10,31 +11,36 @@ import 'package:healthreminder1/models/chartData.dart';
 import '../ClassDiagram/CaloriesSection.dart';
 
 class Data extends ChangeNotifier {
-  dynamic TotalWaterPortion = 0;
-  dynamic WaterTarget = 1500;
-  List<Water> UserWaterList = [];
-  DateTime ListDate = DateTime.now();
-  List<Water> WaterList = [Water(330, DateTime.now().toString())];
-  List<chartData> WaterChart = [
-    chartData(' Total Water\n Consumpstion', 0),
-  ];
+  WaterSection WaterSectionData = new WaterSection();
   //Water Section Methods ////////////////////////////////////////////////////////
   void AddWater(Water newWater) {
-    TotalWaterPortion = TotalWaterPortion + newWater.amount;
-    UserWaterList.add(newWater);
-    WaterChart[0].type = TotalWaterPortion;
+    WaterSectionData.TotalWaterPortion =
+        WaterSectionData.TotalWaterPortion + newWater.amount;
+    WaterSectionData.UserWaterList.add(newWater);
+    WaterSectionData.WaterChart[0].type = WaterSectionData.TotalWaterPortion;
+    WaterSectionData.UserWaterListDates.add(newWater.date);
+    WaterSectionData.UserWaterListAmount.add(newWater.amount);
+    UpdateWaterData();
+    WaterChartKepUpDate();
     notifyListeners();
   }
 
   void DeleteWater(Water newWater) {
-    TotalWaterPortion = TotalWaterPortion - newWater.amount;
-    UserWaterList.remove(newWater);
-    WaterChart[0].type = TotalWaterPortion;
+    WaterSectionData.TotalWaterPortion =
+        WaterSectionData.TotalWaterPortion - newWater.amount;
+    WaterSectionData.UserWaterList.remove(newWater);
+    WaterSectionData.WaterChart[0].type = WaterSectionData.TotalWaterPortion;
+    WaterSectionData.UserWaterListDates.remove(newWater.date);
+    WaterSectionData.UserWaterListAmount.remove(newWater.amount);
+    UpdateWaterData();
+    WaterChartKepUpDate();
     notifyListeners();
   }
 
   void UpdateWaterTarget(dynamic NewTarget) {
-    WaterTarget = NewTarget;
+    WaterSectionData.WaterTarget = NewTarget;
+    WaterSectionData.chartWaterTarget = WaterSectionData.WaterTarget;
+    UpdateWaterData();
     notifyListeners();
   }
 
@@ -44,9 +50,59 @@ class Data extends ChangeNotifier {
         .doc(CaloriesSectionData.singedInUser.email)
         .collection("Data");
     docUser.doc('WaterData').update({
-      'Weight': CaloriesSectionData.Weight,
-      'Height': CaloriesSectionData.Height,
+      'TotalWaterPortion': WaterSectionData.TotalWaterPortion,
+      'WaterTarget': WaterSectionData.WaterTarget,
+      'DatesUserWaterList': WaterSectionData.UserWaterListDates,
+      'UserWaterListAmount': WaterSectionData.UserWaterListAmount,
     });
+  }
+
+  void SelectWaterDay(DateTime newDate, int newDayMultiplier) {
+    changeWaterListDate(newDate);
+    WaterSectionData.WaterdayTargetMultiplyer = newDayMultiplier;
+    WaterSectionData.chartWaterTarget = WaterSectionData.WaterTarget *
+        WaterSectionData.WaterdayTargetMultiplyer;
+    WaterChartKepUpDate();
+    notifyListeners();
+  }
+
+  void WaterChartKepUpDateAtFirst() async {
+    await Future.delayed(Duration(milliseconds: 400));
+
+    int tempTotalWater = 0;
+    for (var i = 0; i < WaterSectionData.UserWaterList.length; i++) {
+      if (WaterSectionData.WaterListDate.day <=
+          DateTime.parse(WaterSectionData.UserWaterList[i].date).day) {
+        tempTotalWater =
+            tempTotalWater + WaterSectionData.UserWaterList[i].amount as int;
+      }
+    }
+
+    newWaterChart(tempTotalWater);
+    notifyListeners();
+  }
+
+  void WaterChartKepUpDate() {
+    int tempTotalWater = 0;
+    for (var i = 0; i < WaterSectionData.UserWaterList.length; i++) {
+      if (WaterSectionData.WaterListDate.day <=
+          DateTime.parse(WaterSectionData.UserWaterList[i].date).day) {
+        tempTotalWater =
+            tempTotalWater + WaterSectionData.UserWaterList[i].amount as int;
+      }
+    }
+
+    newWaterChart(tempTotalWater);
+  }
+
+  void newWaterChart(int newWaterChart) {
+    WaterSectionData.WaterChart[0].type = newWaterChart;
+    notifyListeners();
+  }
+
+  void changeWaterListDate(DateTime newListDate) {
+    WaterSectionData.WaterListDate = newListDate;
+    notifyListeners();
   }
 
   //Calorie Section Methods ////////////////////////////////////////////////////////
@@ -182,5 +238,22 @@ class Data extends ChangeNotifier {
       'Weight': CaloriesSectionData.Weight,
       'Height': CaloriesSectionData.Height,
     });
+  }
+
+  void ListAtFirst() {
+    changeListDate(DateTime.now());
+
+    ChartKepUpDate();
+    CaloriesSectionData.dayTargetMultiplyer = 1;
+
+    CaloriesSectionData.chartTargetCalories =
+        CaloriesSectionData.TargetCalories;
+
+    CaloriesSectionData.dayTargetMultiplyer = 1;
+
+    CaloriesSectionData.chartTargetSteps = CaloriesSectionData.TargetSteps;
+
+    CaloriesSectionData.chartTargetCaloriesBurning =
+        CaloriesSectionData.TargetCaloriesBurning;
   }
 }
