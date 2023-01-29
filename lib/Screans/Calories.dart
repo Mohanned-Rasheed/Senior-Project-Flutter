@@ -434,17 +434,6 @@ class _CaloriesSectionState extends State<CaloriesSection> {
             padding: EdgeInsets.only(top: 25, bottom: 20),
             child: Column(
               children: <Widget>[
-                // RaisedButton(
-                //   onPressed: () async {
-                //     _savingData();
-
-                //     Uri url = Uri.base;
-
-                //     final response =
-                //         await http.post(url, body: json.encode({'name': name}));
-                //   },
-                //   key: _formkey,
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -486,55 +475,6 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                     ],
                   ),
                 ),
-
-                /* StreamBuilder<QuerySnapshot>(
-                  stream: _firestore.collection('Users').snapshots(),
-                  builder: (context, snapshot) {
-                    var flag = true;
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.blue,
-                        ),
-                      );
-                    }
-
-                    if (snapshot.hasData) {
-                      final users = snapshot.data!.docs;
-
-                      for (var user in users) {
-                        final usersteps = user.get('steps');
-                        final email = user.get('email');
-                        final calories = user.get('calories');
-                        if (email ==
-                            Provider.of<Data>(context, listen: false)
-                                .singedInUser
-                                .email) {
-                          // Notification.sendNotification(
-                          //   'this is title', 'this is body');
-                        }
-                      }
-                    }
-
-                    return Container(
-                      width: 0,
-                      height: 0,
-                    );
-                  },
-                ),*/
-
-                /*Container(
-                  height: 300,
-                  width: 400,
-                  child: SfCartesianChart(
-                    series: <RadialBarSeries>[
-                      PieSeries<GDPData, String>(
-                          dataSource: _chartData,
-                          xValueMapper: (GDPData data, _) => data.c,
-                          yValueMapper: (GDPData data, _) => data.a)
-                    ],
-                  ),
-                ),*/
                 Flexible(
                   child: Container(
                     width: 0,
@@ -688,27 +628,6 @@ class _CaloriesSectionState extends State<CaloriesSection> {
                 SizedBox(
                   height: 5,
                 ),
-                // Container(
-                //   padding: EdgeInsets.only(left: 15),
-                //   alignment: Alignment.centerLeft,
-                //   child: RaisedButton(
-                //       elevation: 4,
-                //       shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.all(Radius.circular(12))),
-                //       child: Text('Change Calories Target'),
-                //       onPressed: () {
-                //         showModalBottomSheet(
-                //             isScrollControlled: true,
-                //             context: context,
-                //             builder: (context) => SingleChildScrollView(
-                //                 child: Container(
-                //                     padding: EdgeInsets.only(
-                //                         bottom: MediaQuery.of(context)
-                //                             .viewInsets
-                //                             .bottom),
-                //                     child: ChangeCaloriesTarget())));
-                //       }),
-                // ),
               ],
             ),
           ),
@@ -721,7 +640,6 @@ class _CaloriesSectionState extends State<CaloriesSection> {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
-      //print(_scanBarcode.substring(5) + "aaaaaaaaaaaaaaaaaaaa");
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
