@@ -1,8 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:healthreminder1/models/Meals.dart';
 import 'package:healthreminder1/models/chartData.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
@@ -16,22 +12,22 @@ class stepsChart extends StatefulWidget {
 }
 
 class _ChartState extends State<stepsChart> {
-  late List<chartData> _chartData =
-      Provider.of<Data>(context).CaloriesSectionData.StepsChart;
+  late final List<chartData> _chartData =
+      Provider.of<Data>(context).CaloriesSectionData.getStepsChart;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          color: Colors.teal[100]),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          color: Colors.white12),
       child: SfCircularChart(
         title: ChartTitle(
             text:
-                'Target Steps ${Provider.of<Data>(context, listen: false).CaloriesSectionData.chartTargetSteps}'),
+                'Target Steps ${Provider.of<Data>(context, listen: false).CaloriesSectionData.getChartTargetSteps}'),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
-        margin: EdgeInsets.all(0),
+        margin: const EdgeInsets.all(0),
         series: <CircularSeries>[
           RadialBarSeries<chartData, String>(
               trackColor: Colors.transparent,
@@ -40,11 +36,11 @@ class _ChartState extends State<stepsChart> {
               dataSource: _chartData,
               xValueMapper: (chartData data, _) => data.name,
               yValueMapper: (chartData data, _) => data.type,
-              dataLabelSettings: DataLabelSettings(isVisible: true),
+              dataLabelSettings: const DataLabelSettings(isVisible: true),
               maximumValue: double.parse(
                   Provider.of<Data>(context, listen: false)
                       .CaloriesSectionData
-                      .chartTargetSteps
+                      .getChartTargetSteps
                       .toString()))
         ],
       ),

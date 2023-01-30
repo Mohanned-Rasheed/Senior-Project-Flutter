@@ -19,22 +19,23 @@ class _AddAmealState extends State<AddAmeal> {
           .collection('Users')
           .doc(Provider.of<Data>(context, listen: false)
               .CaloriesSectionData
-              .singedInUser
+              .getSingedInUser
+              .currentUser!
               .email)
           .collection("Data");
       docUser.doc('CaloriesData').update({
         'calories': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .totalCalories,
+            .getTotalCalories,
         'mealsName': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .UserMealsNames,
+            .getUserMealsNames,
         'mealsCalories': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .UserMealsCalories,
+            .getUserMealsCalories,
         'dateOfTheDay': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .UserMealsDates,
+            .getUserMealsDates,
       });
     }
 
@@ -46,7 +47,7 @@ class _AddAmealState extends State<AddAmeal> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search',
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -55,7 +56,7 @@ class _AddAmealState extends State<AddAmeal> {
                     Radius.circular(12),
                   )),
                 ),
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
                 onChanged: (value) {
                   search = value;
                   Provider.of<Data>(context, listen: false)
@@ -101,55 +102,44 @@ class _AddAmealState extends State<AddAmeal> {
                         borderRadius: BorderRadius.circular(12)),
                     color: Colors.amber,
                     elevation: 4,
-                    margin:
-                        EdgeInsets.only(top: 8, left: 12, right: 12, bottom: 8),
+                    margin: const EdgeInsets.only(
+                        top: 8, left: 12, right: 12, bottom: 8),
                     child: ListTile(
                       title: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(Provider.of<Data>(context)
                             .CaloriesSectionData
                             .Searchmeals[index]
                             .name),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
                       ),
                       subtitle: Container(
                         child: Text(
                             ' calories: ${Provider.of<Data>(context).CaloriesSectionData.Searchmeals[index].calories}'),
                       ),
-                      trailing: Container(
-                        child: RaisedButton(
-                          color: Colors.teal[200],
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          onPressed: (() {
-                            Provider.of<Data>(context, listen: false).addcalo(
-                                Provider.of<Data>(context, listen: false)
-                                    .CaloriesSectionData
-                                    .Searchmeals[index]
-                                    .calories);
+                      trailing: ElevatedButton(
+                        // color: Colors.teal[200],
+                        // shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(12)),
+                        onPressed: (() {
+                          Provider.of<Data>(context, listen: false).addcalo(
+                              Provider.of<Data>(context, listen: false)
+                                  .CaloriesSectionData
+                                  .Searchmeals[index]
+                                  .calories);
 
-                            Provider.of<Data>(context, listen: false)
-                                .addUserMealsList(
-                                    Provider.of<Data>(context, listen: false)
-                                        .CaloriesSectionData
-                                        .Searchmeals[index]);
-                            Provider.of<Data>(context, listen: false)
-                                .addDates(DateTime.now().toString());
-                            Provider.of<Data>(context, listen: false)
-                                .ChartKepUpDate();
-                            updateUserMeals();
-                            // showModalBottomSheet(
-                            //     context: context,
-                            //     builder: (context) => Container(
-                            //           child: SingleChildScrollView(
-                            //               child: Container(
-                            //             child: AddAmeal(),
-                            //             height: 350,
-                            //           )),
-                            //         ));
-                          }),
-                          child: Text('Add',
-                              style: TextStyle(color: Colors.black54)),
-                        ),
+                          Provider.of<Data>(context, listen: false)
+                              .addUserMealsList(
+                                  Provider.of<Data>(context, listen: false)
+                                      .CaloriesSectionData
+                                      .Searchmeals[index]);
+                          Provider.of<Data>(context, listen: false)
+                              .addDates(DateTime.now().toString());
+                          Provider.of<Data>(context, listen: false)
+                              .ChartKepUpDate();
+                          updateUserMeals();
+                        }),
+                        child: const Text('Add',
+                            style: TextStyle(color: Colors.black54)),
                       ),
                     ),
                   );

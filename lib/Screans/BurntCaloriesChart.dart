@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:healthreminder1/Screans/AfterRegester_Screan.dart';
-import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/models/chartData.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +13,8 @@ class BurntCaloriesChart extends StatefulWidget {
 }
 
 class _ChartState extends State<BurntCaloriesChart> {
-  late List<chartData> _chartData =
-      Provider.of<Data>(context).CaloriesSectionData.CaloriesBurntChart;
-
-  @override
-  void initState() {}
+  late final List<chartData> _chartData =
+      Provider.of<Data>(context).CaloriesSectionData.getCaloriesBurntChart;
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +24,15 @@ class _ChartState extends State<BurntCaloriesChart> {
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.teal[100]),
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            color: Colors.white12),
         child: SfCircularChart(
           title: ChartTitle(
               text:
-                  'Target BurnCalories ${Provider.of<Data>(context, listen: false).CaloriesSectionData.chartTargetCaloriesBurning}'),
+                  'Target BurnCalories ${Provider.of<Data>(context, listen: false).CaloriesSectionData.getChartTargetCaloriesBurning}'),
           legend: Legend(
               isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           series: <CircularSeries>[
             RadialBarSeries<chartData, String>(
               cornerStyle: CornerStyle.bothCurve,
@@ -46,11 +42,11 @@ class _ChartState extends State<BurntCaloriesChart> {
               dataSource: _chartData,
               xValueMapper: (chartData data, _) => data.name,
               yValueMapper: (chartData data, _) => data.type,
-              dataLabelSettings: DataLabelSettings(isVisible: true),
+              dataLabelSettings: const DataLabelSettings(isVisible: true),
               maximumValue: double.parse(
                   Provider.of<Data>(context, listen: false)
                       .CaloriesSectionData
-                      .chartTargetCaloriesBurning
+                      .getChartTargetCaloriesBurning
                       .toString()),
             )
           ],
@@ -58,4 +54,7 @@ class _ChartState extends State<BurntCaloriesChart> {
       ),
     );
   }
+
+  @override
+  void initState() {}
 }

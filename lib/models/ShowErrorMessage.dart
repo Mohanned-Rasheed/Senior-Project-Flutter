@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 void ShowErrorMessage(
     BuildContext context, String FirstLine, String SecondLine, double height) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    duration: Duration(seconds: 6),
+    duration: const Duration(seconds: 6),
     content: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         height: height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.red,
             borderRadius: BorderRadius.all(Radius.circular(20))),
         child: Column(
@@ -15,7 +15,8 @@ void ShowErrorMessage(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(FirstLine,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             Text(SecondLine),
           ],
         )),

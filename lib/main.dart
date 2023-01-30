@@ -3,13 +3,13 @@ import 'package:healthreminder1/Screans/AfterRegester_Screan.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/Screans/Register_Screan.dart';
 import 'package:healthreminder1/Screans/Sginin_Screan.dart';
-import 'package:healthreminder1/Screans/Sleep.dart';
-import 'package:healthreminder1/WaterSection/WaterScrean.dart';
+import 'package:healthreminder1/SleepSection/Screans/SleepScrean.dart';
+import 'package:healthreminder1/SleepSection/Screans/DetailedRecordChart.dart';
+import 'package:healthreminder1/WaterSection/Screans/WaterScrean.dart';
 import 'package:healthreminder1/Screans/Welcome_Screan.dart';
-import 'Screans/Calories.dart';
+import 'Screans/CaloriesScrean.dart';
 import 'package:provider/provider.dart';
 import 'userData/Data.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -58,6 +58,7 @@ class _MyAppState extends State<MyApp> {
           ChatSuggetion.ScreanRoute: (context) => MyWidget(),
           AfterRegester_Screan.ScreanRoute: (context) => AfterRegester_Screan(),
           CaloriesSection.ScreanRoute: (context) => CaloriesSection(),
+          DetailedRecord.ScreanRoute: (context) => DetailedRecord(),
         },
       ),
     );
@@ -82,18 +83,18 @@ class _MyAppState extends State<MyApp> {
               height: 60,
               destinations: [
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.fastfood_rounded),
+                  selectedIcon: Icon(Icons.fastfood_rounded),
                   label: 'CaloriesSection',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.water_drop_outlined),
+                  selectedIcon: Icon(Icons.water_drop_outlined),
                   label: 'WaterSection',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.airline_seat_individual_suite_sharp),
+                  selectedIcon: Icon(Icons.airline_seat_individual_suite_sharp),
                   label: 'SleepSection',
                 ),
               ],

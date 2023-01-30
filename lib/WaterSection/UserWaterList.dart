@@ -14,82 +14,18 @@ class UserWaterList extends StatefulWidget {
 }
 
 class _UserWaterListState extends State<UserWaterList> {
-  initState() {
-    getDataAtFirst();
-  }
-
-  void getDataAtFirst() async {
-    CollectionReference userref = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(Provider.of<Data>(context, listen: false)
-            .CaloriesSectionData
-            .singedInUser
-            .email)
-        .collection("Data");
-    await userref.doc('WaterData').get().then((element) => {
-          setState(() {
-            Provider.of<Data>(context, listen: false)
-                .WaterSectionData
-                .TotalWaterPortion = element.get("TotalWaterPortion");
-            Provider.of<Data>(context, listen: false)
-                .WaterSectionData
-                .WaterTarget = element.get("WaterTarget");
-            Provider.of<Data>(context, listen: false)
-                .WaterSectionData
-                .UserWaterListDates = element.get("DatesUserWaterList");
-            Provider.of<Data>(context, listen: false)
-                .WaterSectionData
-                .UserWaterListAmount = element.get("UserWaterListAmount");
-
-            if (Provider.of<Data>(context, listen: false)
-                    .WaterSectionData
-                    .UserWaterListAmount
-                    .length !=
-                Provider.of<Data>(context, listen: false)
-                    .WaterSectionData
-                    .UserWaterList
-                    .length) {
-              Provider.of<Data>(context, listen: false)
-                  .WaterSectionData
-                  .UserWaterList
-                  .clear();
-              for (var i = 0;
-                  i <
-                      Provider.of<Data>(context, listen: false)
-                          .WaterSectionData
-                          .UserWaterListAmount
-                          .length;
-                  i++) {
-                Water water = Water(
-                    Provider.of<Data>(context, listen: false)
-                        .WaterSectionData
-                        .UserWaterListAmount[i],
-                    Provider.of<Data>(context, listen: false)
-                        .WaterSectionData
-                        .UserWaterListDates[i]);
-                Provider.of<Data>(context, listen: false)
-                    .WaterSectionData
-                    .UserWaterList
-                    .add(water);
-              }
-            }
-          })
-        });
-
-    Provider.of<Data>(context, listen: false).WaterChartKepUpDateAtFirst();
-    Provider.of<Data>(context, listen: false).SelectWaterDay(DateTime.now(), 1);
-  }
-
   List<String> itemList = ['today', 'last 3 days', 'last week'];
+
   String selectedItem = 'today';
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 15),
+      margin: const EdgeInsets.only(top: 15),
       height: MediaQuery.of(context).size.height * 0.5,
       width: MediaQuery.of(context).size.width * 0.94,
-      decoration: new BoxDecoration(
-        borderRadius: new BorderRadius.circular(16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
         color: Colors.white60,
       ),
       child: Column(
@@ -104,7 +40,7 @@ class _UserWaterListState extends State<UserWaterList> {
               //   child: Text("ChatBot"),
               // ),
               GestureDetector(
-                child: Icon(Icons.add_circle),
+                child: const Icon(Icons.add_circle),
                 onTap: () => showModalBottomSheet(
                   backgroundColor: Colors.teal[100],
                   context: context,
@@ -128,7 +64,7 @@ class _UserWaterListState extends State<UserWaterList> {
                                               bottom: MediaQuery.of(context)
                                                   .viewInsets
                                                   .bottom),
-                                          child: AddWater())));
+                                          child: const AddWater())));
                             },
                             child: SingleChildScrollView(
                                 padding: EdgeInsets.only(
@@ -143,7 +79,7 @@ class _UserWaterListState extends State<UserWaterList> {
                                               BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
-                                      margin: EdgeInsets.only(
+                                      margin: const EdgeInsets.only(
                                           top: 8,
                                           left: 20,
                                           right: 20,
@@ -153,18 +89,18 @@ class _UserWaterListState extends State<UserWaterList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
                                             child: Center(
                                               child: Text(
                                                 "Add Water",
                                                 style: TextStyle(fontSize: 20),
                                               ),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
                                           ),
                                         ),
                                         subtitle: Container(
-                                          child: Text(''),
+                                          child: const Text(''),
                                         ),
                                       ),
                                     )
@@ -187,7 +123,7 @@ class _UserWaterListState extends State<UserWaterList> {
                                               bottom: MediaQuery.of(context)
                                                   .viewInsets
                                                   .bottom),
-                                          child: ChangeWaterTarget())));
+                                          child: const ChangeWaterTarget())));
                             },
                             child: SingleChildScrollView(
                                 padding: EdgeInsets.only(
@@ -202,7 +138,7 @@ class _UserWaterListState extends State<UserWaterList> {
                                               BorderRadius.circular(12)),
                                       color: Colors.amber,
                                       elevation: 4,
-                                      margin: EdgeInsets.only(
+                                      margin: const EdgeInsets.only(
                                           top: 8,
                                           left: 20,
                                           right: 20,
@@ -212,18 +148,18 @@ class _UserWaterListState extends State<UserWaterList> {
                                           padding:
                                               const EdgeInsets.only(top: 13.0),
                                           child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
                                             child: Center(
                                               child: Text(
                                                 "Change Water Target",
                                                 style: TextStyle(fontSize: 20),
                                               ),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
                                           ),
                                         ),
                                         subtitle: Container(
-                                          child: Text(''),
+                                          child: const Text(''),
                                         ),
                                       ),
                                     )
@@ -253,11 +189,15 @@ class _UserWaterListState extends State<UserWaterList> {
                       } else if (selectedItem == 'last 3 days') {
                         Provider.of<Data>(context, listen: false)
                             .SelectWaterDay(
-                                DateTime.now().subtract(Duration(days: 3)), 3);
+                                DateTime.now()
+                                    .subtract(const Duration(days: 3)),
+                                3);
                       } else if (selectedItem == 'last week') {
                         Provider.of<Data>(context, listen: false)
                             .SelectWaterDay(
-                                DateTime.now().subtract(Duration(days: 7)), 7);
+                                DateTime.now()
+                                    .subtract(const Duration(days: 7)),
+                                7);
                       }
                     }),
                   ),
@@ -269,52 +209,51 @@ class _UserWaterListState extends State<UserWaterList> {
             child: ListView.builder(
               itemCount: Provider.of<Data>(context)
                   .WaterSectionData
-                  .UserWaterList
+                  .getUserWaterList
                   .length,
               itemBuilder: (BuildContext context, int index) {
                 return Provider.of<Data>(context)
                             .WaterSectionData
-                            .WaterListDate
+                            .getWaterListDate
                             .day <=
                         DateTime.parse(Provider.of<Data>(context)
                                 .WaterSectionData
-                                .UserWaterList[index]
+                                .getUserWaterList[index]
                                 .date)
                             .day
                     ? Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
-                        color: Color(0xffCFB997),
+                        color: const Color(0xffCFB997),
                         elevation: 4,
-                        margin: EdgeInsets.only(
+                        margin: const EdgeInsets.only(
                             top: 8, left: 20, right: 20, bottom: 8),
                         child: ListTile(
                           title: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(Provider.of<Data>(context)
                                     .WaterSectionData
-                                    .UserWaterList[index]
+                                    .getUserWaterList[index]
                                     .amount
                                     .toString() +
                                 ' ml\t\t\t\t\t'),
-                            padding: EdgeInsets.symmetric(horizontal: 10),
                           ),
-                          subtitle: Text('\t\t' +
-                              'At \t' +
+                          subtitle: Text('\t\t' 'At \t' +
                               Provider.of<Data>(context)
                                   .WaterSectionData
-                                  .UserWaterList[index]
+                                  .getUserWaterList[index]
                                   .date
                                   .toString()
                                   .substring(0, 10)),
                           trailing: Container(
                             child: IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: (() {
                                 Provider.of<Data>(context, listen: false)
                                     .DeleteWater(Provider.of<Data>(context,
                                             listen: false)
                                         .WaterSectionData
-                                        .UserWaterList[index]);
+                                        .getUserWaterList[index]);
                               }),
                             ),
                           ),
@@ -327,5 +266,73 @@ class _UserWaterListState extends State<UserWaterList> {
         ],
       ),
     );
+  }
+
+  void getDataAtFirst() async {
+    CollectionReference userref = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Provider.of<Data>(context, listen: false)
+            .CaloriesSectionData
+            .getSingedInUser
+            .currentUser!
+            .email)
+        .collection("Data");
+    await userref.doc('WaterData').get().then((element) => {
+          setState(() {
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .setTotalWaterPortion = element.get("TotalWaterPortion");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .setWaterTarget = element.get("WaterTarget");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .setUserWaterListDates = element.get("DatesUserWaterList");
+            Provider.of<Data>(context, listen: false)
+                .WaterSectionData
+                .setUserWaterListAmount = element.get("UserWaterListAmount");
+
+            if (Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .getUserWaterListAmount
+                    .length !=
+                Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .getUserWaterList
+                    .length) {
+              Provider.of<Data>(context, listen: false)
+                  .WaterSectionData
+                  .getUserWaterList
+                  .clear();
+              for (var i = 0;
+                  i <
+                      Provider.of<Data>(context, listen: false)
+                          .WaterSectionData
+                          .getUserWaterListAmount
+                          .length;
+                  i++) {
+                Water water = Water(
+                    Provider.of<Data>(context, listen: false)
+                        .WaterSectionData
+                        .getUserWaterListAmount[i],
+                    Provider.of<Data>(context, listen: false)
+                        .WaterSectionData
+                        .getUserWaterListDates[i]);
+                Provider.of<Data>(context, listen: false)
+                    .WaterSectionData
+                    .getUserWaterList
+                    .add(water);
+              }
+            }
+          })
+        });
+
+    Provider.of<Data>(context, listen: false).WaterChartKepUpDateAtFirst();
+    Provider.of<Data>(context, listen: false).SelectWaterDay(DateTime.now(), 1);
+  }
+
+  @override
+  initState() {
+    getDataAtFirst();
   }
 }

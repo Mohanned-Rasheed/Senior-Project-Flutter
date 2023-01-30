@@ -27,7 +27,7 @@ class _AddWaterState extends State<AddWater> {
               child: ListView.builder(
                 itemCount: Provider.of<Data>(context, listen: false)
                     .WaterSectionData
-                    .WaterList
+                    .getWaterList
                     .length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
@@ -46,7 +46,7 @@ class _AddWaterState extends State<AddWater> {
                         child: Text(
                           Provider.of<Data>(context, listen: false)
                                   .WaterSectionData
-                                  .WaterList[index]
+                                  .getWaterList[index]
                                   .amount
                                   .toString() +
                               ' ml ',
@@ -54,20 +54,20 @@ class _AddWaterState extends State<AddWater> {
                         ),
                       ),
                       trailing: Container(
-                        child: RaisedButton(
-                          color: Colors.teal[200],
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                        child: ElevatedButton(
+                          // color: Colors.teal[200],
+                          // shape: RoundedRectangleBorder(
+                          //     borderRadius: BorderRadius.circular(12)),
                           onPressed: (() {
                             Provider.of<Data>(context, listen: false).AddWater(
                                 Water(
                                     Provider.of<Data>(context, listen: false)
                                         .WaterSectionData
-                                        .WaterList[index]
+                                        .getWaterList[index]
                                         .amount,
                                     Provider.of<Data>(context, listen: false)
                                         .WaterSectionData
-                                        .WaterList[index]
+                                        .getWaterList[index]
                                         .date));
                           }),
                           child: Text('Add',

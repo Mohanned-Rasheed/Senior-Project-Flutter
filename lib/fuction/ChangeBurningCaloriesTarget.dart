@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthreminder1/models/ShowErrorMessage.dart';
-import '../userData/Data.dart';
+import '../../userData/Data.dart';
 import 'package:provider/provider.dart';
 
 class ChangeBurningCaloriesTarget extends StatefulWidget {
@@ -18,13 +18,14 @@ class _ChangeCaloriesTarget extends State<ChangeBurningCaloriesTarget> {
           .collection('Users')
           .doc(Provider.of<Data>(context, listen: false)
               .CaloriesSectionData
-              .singedInUser
+              .getSingedInUser
+              .currentUser!
               .email)
           .collection("Data");
       docUser.doc('CaloriesData').update({
         'TargetCaloriesBurning': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .TargetCaloriesBurning,
+            .getTargetCaloriesBurning,
       });
     });
   }
@@ -32,7 +33,7 @@ class _ChangeCaloriesTarget extends State<ChangeBurningCaloriesTarget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(30),
+      padding: const EdgeInsets.all(30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -49,28 +50,46 @@ class _ChangeCaloriesTarget extends State<ChangeBurningCaloriesTarget> {
             autofocus: true,
             textAlign: TextAlign.center,
             onChanged: (newTarget) {
-              this.NewTarget = newTarget;
+              NewTarget = newTarget;
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           TextButton(
             onPressed: () {
-              if (int.tryParse(NewTarget) != null) {
+              try {
+                if (NewTarget.isEmpty) {
+                  throw NullThrownError();
+                }
+                if (int.tryParse(NewTarget) == null) {
+                  throw const FormatException();
+                }
+                if (int.parse(NewTarget) <= 0) {
+                  throw const FormatException();
+                }
                 Provider.of<Data>(context, listen: false)
                     .updateCaloBurningTarget(int.parse(NewTarget));
                 updateCaloriesBurningTarget();
-              } else {
-                ShowErrorMessage(context, 'Wrong Burning Calories Target Input',
-                    'Please Enter Your Burning Calories Target as Numbers', 90);
+              } on NullThrownError {
+                ShowErrorMessage(
+                    context, 'Error', 'Please Make Sure Enter a Number', 90);
+              } on FormatException {
+                ShowErrorMessage(
+                    context,
+                    'Wrong Calories Target Input',
+                    'Please Enter Your Calories Target as positive Numbers',
+                    90);
+              } catch (e) {
+                ShowErrorMessage(context, 'Error',
+                    'Make Sure To Fill The Field With Positve Number', 90);
               }
 
               Navigator.pop(context);
             },
-            child: Text('Change'),
             style: TextButton.styleFrom(
                 backgroundColor: Colors.teal[300], primary: Colors.white),
+            child: const Text('Change'),
           )
         ],
       ),

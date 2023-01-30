@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:healthreminder1/Screans/Register_Screan.dart';
 import 'package:healthreminder1/Screans/Sginin_Screan.dart';
 
@@ -12,17 +10,17 @@ class WelcomeScrean extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Column(
               children: [
-                Container(
+                SizedBox(
                     height: 180,
                     child: Image.asset('images/HealthyreminderLogo.png')),
-                Text(
+                const Text(
                   "Healthy Reminder",
                   style: TextStyle(
                       fontSize: 40,
@@ -31,11 +29,11 @@ class WelcomeScrean extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Material(
                 elevation: 5,
                 color: Colors.yellow[800],
@@ -46,14 +44,14 @@ class WelcomeScrean extends StatelessWidget {
                   },
                   minWidth: 200,
                   height: 42,
-                  child: Text(
+                  child: const Text(
                     "Sgin in",
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Material(
                 elevation: 5,
                 color: Colors.blue[600],
@@ -64,7 +62,7 @@ class WelcomeScrean extends StatelessWidget {
                   },
                   minWidth: 200,
                   height: 42,
-                  child: Text(
+                  child: const Text(
                     "Register",
                   ),
                 ),

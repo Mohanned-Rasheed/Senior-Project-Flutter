@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthreminder1/models/ShowErrorMessage.dart';
-import '../userData/Data.dart';
+import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
 class ChangeStepsTarget extends StatefulWidget {
@@ -18,13 +18,14 @@ class _ChangeCaloriesTarget extends State<ChangeStepsTarget> {
           .collection('Users')
           .doc(Provider.of<Data>(context, listen: false)
               .CaloriesSectionData
-              .singedInUser
+              .getSingedInUser
+              .currentUser!
               .email)
           .collection("Data");
       docUser.doc('CaloriesData').update({
         'TargetSteps': Provider.of<Data>(context, listen: false)
             .CaloriesSectionData
-            .TargetSteps,
+            .getTargetSteps,
       });
     });
   }
@@ -32,7 +33,7 @@ class _ChangeCaloriesTarget extends State<ChangeStepsTarget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(30),
+      padding: const EdgeInsets.all(30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -49,28 +50,46 @@ class _ChangeCaloriesTarget extends State<ChangeStepsTarget> {
             autofocus: true,
             textAlign: TextAlign.center,
             onChanged: (newTarget) {
-              this.NewTarget = newTarget;
+              NewTarget = newTarget;
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           TextButton(
             onPressed: () {
-              if (int.tryParse(NewTarget) != null) {
+              try {
+                if (NewTarget.isEmpty) {
+                  throw NullThrownError();
+                }
+                if (int.tryParse(NewTarget) == null) {
+                  throw const FormatException();
+                }
+                if (int.parse(NewTarget) <= 0) {
+                  throw const FormatException();
+                }
                 Provider.of<Data>(context, listen: false)
-                    .updateStepsTarget(NewTarget);
+                    .updateStepsTarget(int.parse(NewTarget));
                 updateStepsTarget();
-              } else {
-                ShowErrorMessage(context, 'Wrong Calories Target Input',
-                    'Please Enter Your Calories Target as Numbers', 75);
+              } on NullThrownError {
+                ShowErrorMessage(
+                    context, 'Error', 'Please Make Sure Enter a Number', 90);
+              } on FormatException {
+                ShowErrorMessage(
+                    context,
+                    'Wrong Steps Target Input',
+                    'Please Enter Your Calories Target as positive Numbers',
+                    90);
+              } catch (e) {
+                ShowErrorMessage(context, 'Error',
+                    'Make Sure To Fill The Field With Positve Number', 90);
               }
 
               Navigator.pop(context);
             },
-            child: Text('Change'),
             style: TextButton.styleFrom(
                 backgroundColor: Colors.teal[300], primary: Colors.white),
+            child: Text('Change'),
           )
         ],
       ),
