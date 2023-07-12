@@ -5,9 +5,6 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
-import 'package:healthreminder1/fuction/ChangeBurningCaloriesTarget.dart';
-import 'package:healthreminder1/fuction/ChangeCaloriesTarget.dart';
-import 'package:healthreminder1/fuction/ChangeStepsTarget.dart';
 import 'package:healthreminder1/models/Meals.dart';
 import 'package:provider/provider.dart';
 import '../fuction/TargetChanger.dart';
@@ -60,25 +57,6 @@ class UserMealsList extends State<MealsList> {
         ),
         child: Column(
           children: [
-            // ClipRRect(
-            //   borderRadius: BorderRadius.circular(200),
-            //   child: SizedBox(
-            //     height: 200,
-            //     width: 200,
-            //     child: Stack(children: [
-            //       Container(
-            //         color: Colors.black,
-            //       ),
-            //       Align(
-            //         alignment: Alignment.bottomCenter,
-            //         child: Container(
-            //           height: 200 * (3 / 8),
-            //           color: Colors.white,
-            //         ),
-            //       )
-            //     ]),
-            //   ),
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -141,8 +119,6 @@ class UserMealsList extends State<MealsList> {
                                                       TextStyle(fontSize: 20),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
                                             ),
                                           ),
                                           subtitle: Container(
