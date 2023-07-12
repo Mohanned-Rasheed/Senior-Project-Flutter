@@ -6,9 +6,13 @@ import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/fuction/AddAmeal.dart';
 import 'package:healthreminder1/fuction/AddCalories.dart';
 import 'package:healthreminder1/models/Meals.dart';
+import 'package:healthreminder1/models/ShowErrorMessage.dart';
 import 'package:provider/provider.dart';
 import '../fuction/TargetChanger.dart';
+import '../fuction/notification_service.dart';
 import '../userData/Data.dart';
+
+notification Notification = notification();
 
 class MealsList extends StatefulWidget {
   const MealsList({Key? key}) : super(key: key);
@@ -21,38 +25,51 @@ class UserMealsList extends State<MealsList> {
   List<String> itemList = ['today', 'last 3 days', 'last week'];
   String selectedItem = 'today';
 
+  void CheckNotifcation() {
+    Notification.initialiseNotifications();
+    Notification.sendNotification(
+        'YourReminig Calories is: ${Provider.of<Data>(context, listen: false).User.CaloriesSectionData.getTargetCalories - Provider.of<Data>(context, listen: false).User.CaloriesSectionData.getCaloriesChart[0].getValue}',
+        'Dont Forget To Eat To reach your Target',
+        0);
+  }
+
   @override
   Widget build(BuildContext context) {
     void updateUser() {
       final docUser = FirebaseFirestore.instance
           .collection('Users')
           .doc(Provider.of<Data>(context, listen: false)
-              .CaloriesSectionData
-              .singedInUser
+              .User
+              .getSingedInUser
+              .currentUser!
               .email)
           .collection("Data");
       docUser.doc('CaloriesData').update({
         'calories': Provider.of<Data>(context, listen: false)
+            .User
             .CaloriesSectionData
-            .totalCalories,
+            .getTotalCalories,
         'mealsName': Provider.of<Data>(context, listen: false)
+            .User
             .CaloriesSectionData
-            .UserMealsNames,
+            .getUserMealsNames,
         'mealsCalories': Provider.of<Data>(context, listen: false)
+            .User
             .CaloriesSectionData
-            .UserMealsCalories,
+            .getUserMealsCalories,
         'dateOfTheDay': Provider.of<Data>(context, listen: false)
+            .User
             .CaloriesSectionData
-            .UserMealsDates,
+            .getUserMealsDates,
       });
     }
 
     return Container(
-        margin: EdgeInsets.only(top: 15),
+        margin: const EdgeInsets.only(top: 15),
         height: MediaQuery.of(context).size.height * 0.5,
         width: MediaQuery.of(context).size.width * 0.94,
-        decoration: new BoxDecoration(
-          borderRadius: new BorderRadius.circular(16.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
           color: Colors.white60,
         ),
         child: Column(
@@ -60,14 +77,8 @@ class UserMealsList extends State<MealsList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // RaisedButton(
-                //   onPressed: () {
-                //     Navigator.pushNamed(context, ChatSuggetion.ScreanRoute);
-                //   },
-                //   child: Text("ChatBot"),
-                // ),
                 GestureDetector(
-                  child: Icon(Icons.add_circle),
+                  child: const Icon(Icons.add_circle),
                   onTap: () => showModalBottomSheet(
                     backgroundColor: Colors.teal[100],
                     context: context,
@@ -82,9 +93,9 @@ class UserMealsList extends State<MealsList> {
                                     context: context,
                                     builder: (context) => Container(
                                           child: SingleChildScrollView(
-                                              child: Container(
-                                            child: AddAmeal(),
+                                              child: SizedBox(
                                             height: 500,
+                                            child: AddAmeal(),
                                           )),
                                         ));
                               },
@@ -101,7 +112,7 @@ class UserMealsList extends State<MealsList> {
                                                 BorderRadius.circular(12)),
                                         color: Colors.amber,
                                         elevation: 4,
-                                        margin: EdgeInsets.only(
+                                        margin: const EdgeInsets.only(
                                             top: 8,
                                             left: 20,
                                             right: 20,
@@ -112,6 +123,9 @@ class UserMealsList extends State<MealsList> {
                                               top: 13.0,
                                             ),
                                             child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: Center(
                                                 child: Text(
                                                   "Add Meal",
@@ -122,10 +136,10 @@ class UserMealsList extends State<MealsList> {
                                             ),
                                           ),
                                           subtitle: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                           trailing: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                         ),
                                       )
@@ -138,10 +152,14 @@ class UserMealsList extends State<MealsList> {
                                 showModalBottomSheet(
                                     context: context,
                                     builder: (context) => Container(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                  .viewInsets
+                                                  .bottom),
                                           child: SingleChildScrollView(
-                                              child: Container(
-                                            child: Addcalories(),
+                                              child: SizedBox(
                                             height: 350,
+                                            child: Addcalories(),
                                           )),
                                         ));
                               },
@@ -158,7 +176,7 @@ class UserMealsList extends State<MealsList> {
                                                 BorderRadius.circular(12)),
                                         color: Colors.amber,
                                         elevation: 4,
-                                        margin: EdgeInsets.only(
+                                        margin: const EdgeInsets.only(
                                             top: 8,
                                             left: 20,
                                             right: 20,
@@ -168,6 +186,9 @@ class UserMealsList extends State<MealsList> {
                                             padding: const EdgeInsets.only(
                                                 top: 13.0),
                                             child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: Center(
                                                 child: Text(
                                                   "Add Calories",
@@ -175,15 +196,13 @@ class UserMealsList extends State<MealsList> {
                                                       TextStyle(fontSize: 20),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
                                             ),
                                           ),
                                           subtitle: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                           trailing: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                         ),
                                       )
@@ -208,7 +227,7 @@ class UserMealsList extends State<MealsList> {
                                                 BorderRadius.circular(12)),
                                         color: Colors.amber,
                                         elevation: 4,
-                                        margin: EdgeInsets.only(
+                                        margin: const EdgeInsets.only(
                                             top: 8,
                                             left: 20,
                                             right: 20,
@@ -218,6 +237,9 @@ class UserMealsList extends State<MealsList> {
                                             padding: const EdgeInsets.only(
                                                 top: 13.0),
                                             child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: Center(
                                                 child: Text(
                                                   "ScanQrCode",
@@ -225,15 +247,13 @@ class UserMealsList extends State<MealsList> {
                                                       TextStyle(fontSize: 20),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
                                             ),
                                           ),
                                           subtitle: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                           trailing: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                         ),
                                       )
@@ -259,7 +279,7 @@ class UserMealsList extends State<MealsList> {
                                                 BorderRadius.circular(12)),
                                         color: Colors.amber,
                                         elevation: 4,
-                                        margin: EdgeInsets.only(
+                                        margin: const EdgeInsets.only(
                                             top: 8,
                                             left: 20,
                                             right: 20,
@@ -269,6 +289,9 @@ class UserMealsList extends State<MealsList> {
                                             padding: const EdgeInsets.only(
                                                 top: 13.0),
                                             child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: Center(
                                                 child: Text(
                                                   "ChatBotSuggetion",
@@ -276,15 +299,13 @@ class UserMealsList extends State<MealsList> {
                                                       TextStyle(fontSize: 20),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
                                             ),
                                           ),
                                           subtitle: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                           trailing: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                         ),
                                       )
@@ -303,7 +324,7 @@ class UserMealsList extends State<MealsList> {
                                                 bottom: MediaQuery.of(context)
                                                     .viewInsets
                                                     .bottom),
-                                            child: TargetChanger())));
+                                            child: const TargetChanger())));
                               },
                               child: SingleChildScrollView(
                                   padding: EdgeInsets.only(
@@ -318,7 +339,7 @@ class UserMealsList extends State<MealsList> {
                                                 BorderRadius.circular(12)),
                                         color: Colors.amber,
                                         elevation: 4,
-                                        margin: EdgeInsets.only(
+                                        margin: const EdgeInsets.only(
                                             top: 8,
                                             left: 20,
                                             right: 20,
@@ -328,6 +349,9 @@ class UserMealsList extends State<MealsList> {
                                             padding: const EdgeInsets.only(
                                                 top: 13.0),
                                             child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: Center(
                                                 child: Text(
                                                   "Change Targets",
@@ -335,15 +359,13 @@ class UserMealsList extends State<MealsList> {
                                                       TextStyle(fontSize: 20),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
                                             ),
                                           ),
                                           subtitle: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                           trailing: Container(
-                                            child: Text(''),
+                                            child: const Text(''),
                                           ),
                                         ),
                                       )
@@ -374,115 +396,143 @@ class UserMealsList extends State<MealsList> {
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
                           Provider.of<Data>(context, listen: false)
+                              .User
                               .CaloriesSectionData
-                              .dayTargetMultiplyer = 1;
+                              .setDayTargetMultiplyer = 1;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCalories =
+                                  .setChartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .TargetCalories;
+                                  .getTargetCalories;
 
                           Provider.of<Data>(context, listen: false)
+                              .User
                               .CaloriesSectionData
-                              .dayTargetMultiplyer = 1;
+                              .setDayTargetMultiplyer = 1;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetSteps =
+                                  .setChartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .TargetSteps;
+                                  .getTargetSteps;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCaloriesBurning =
+                                  .setChartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .TargetCaloriesBurning;
+                                  .getTargetCaloriesBurning;
                         } else if (selectedItem == 'last 3 days') {
                           Provider.of<Data>(context, listen: false)
-                              .changeListDate(
-                                  DateTime.now().subtract(Duration(days: 3)));
+                              .changeListDate(DateTime.now()
+                                  .subtract(const Duration(days: 3)));
 
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
+                              .User
                               .CaloriesSectionData
-                              .dayTargetMultiplyer = 3;
+                              .setDayTargetMultiplyer = 3;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCalories =
+                                  .setChartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetCalories *
+                                      .getTargetCalories *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetSteps =
+                                  .setChartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetSteps *
+                                      .getTargetSteps *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCaloriesBurning =
+                                  .setChartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetCaloriesBurning *
+                                      .getTargetCaloriesBurning *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
                         } else if (selectedItem == 'last week') {
                           Provider.of<Data>(context, listen: false)
-                              .changeListDate(
-                                  DateTime.now().subtract(Duration(days: 7)));
+                              .changeListDate(DateTime.now()
+                                  .subtract(const Duration(days: 7)));
 
                           Provider.of<Data>(context, listen: false)
                               .ChartKepUpDate();
 
                           Provider.of<Data>(context, listen: false)
+                              .User
                               .CaloriesSectionData
-                              .dayTargetMultiplyer = 7;
+                              .setDayTargetMultiplyer = 7;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCalories =
+                                  .setChartTargetCalories =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetCalories *
+                                      .getTargetCalories *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetSteps =
+                                  .setChartTargetSteps =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetSteps *
+                                      .getTargetSteps *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
 
                           Provider.of<Data>(context, listen: false)
+                                  .User
                                   .CaloriesSectionData
-                                  .chartTargetCaloriesBurning =
+                                  .setChartTargetCaloriesBurning =
                               Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .TargetCaloriesBurning *
+                                      .getTargetCaloriesBurning *
                                   Provider.of<Data>(context, listen: false)
+                                      .User
                                       .CaloriesSectionData
-                                      .dayTargetMultiplyer;
+                                      .getDayTargetMultiplyer;
                         }
                       }),
                     ),
@@ -490,129 +540,85 @@ class UserMealsList extends State<MealsList> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                // Container(
-                //   height: MediaQuery.of(context).size.height * 0.07,
-                //   width: MediaQuery.of(context).size.width * 0.32,
-                //   padding: EdgeInsets.only(left: 10),
-                //   alignment: Alignment.centerLeft,
-                //   child: RaisedButton(
-                //       elevation: 4,
-                //       shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.all(Radius.circular(12))),
-                //       child: Text('add calories'),
-                //       onPressed: () {
-                //         showModalBottomSheet(
-                //             isScrollControlled: true,
-                //             context: context,
-                //             builder: (context) => SingleChildScrollView(
-                //                 child: Container(
-                //                     padding: EdgeInsets.only(
-                //                         bottom: MediaQuery.of(context)
-                //                             .viewInsets
-                //                             .bottom),
-                //                     child: Addcalories())));
-                //       }),
-                // ),
-                // Container(
-                //   height: MediaQuery.of(context).size.height * 0.07,
-                //   width: MediaQuery.of(context).size.width * 0.28,
-                //   padding: EdgeInsets.only(left: 10),
-                //   alignment: Alignment.centerLeft,
-                //   child: RaisedButton(
-                //     elevation: 4,
-                //     shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(12))),
-                //     child: Text('add meal'),
-                //     onPressed: (() {
-                //       showModalBottomSheet(
-                //           context: context,
-                //           builder: (context) => Container(
-                //                 child: SingleChildScrollView(
-                //                     child: Container(
-                //                   child: AddAmeal(),
-                //                   height: 350,
-                //                 )),
-                //               ));
-                //     }),
-                //   ),
-                // ),
-                // Container(
-                //   height: MediaQuery.of(context).size.height * 0.07,
-                //   width: MediaQuery.of(context).size.width * 0.34,
-                //   padding: EdgeInsets.only(left: 5),
-                //   alignment: Alignment.centerLeft,
-                //   child: RaisedButton(
-                //     elevation: 4,
-                //     shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(12))),
-                //     child: Text('Scan QRCode'),
-                //     onPressed: (() {
-                //       scanQR();
-                //     }),
-                //   ),
-                // ),
-              ],
-            ),
             Flexible(
               child: ListView.builder(
                 itemCount: Provider.of<Data>(context)
+                    .User
                     .CaloriesSectionData
-                    .UserMeals
+                    .getUserMeals
                     .length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Provider.of<Data>(context)
-                              .CaloriesSectionData
-                              .ListDate
-                              .day <=
-                          DateTime.parse(Provider.of<Data>(context)
+                  return DateTime.parse(Provider.of<Data>(context)
+                                  .User
                                   .CaloriesSectionData
-                                  .UserMealsDates[index])
-                              .day
+                                  .getUserMealsDates[index])
+                              .isAfter(Provider.of<Data>(context)
+                                  .User
+                                  .CaloriesSectionData
+                                  .getListDate) ||
+                          Provider.of<Data>(context)
+                                  .User
+                                  .CaloriesSectionData
+                                  .getListDate
+                                  .day ==
+                              DateTime.parse(Provider.of<Data>(context)
+                                      .User
+                                      .CaloriesSectionData
+                                      .getUserMealsDates[index])
+                                  .day
                       ? Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           color: Colors.teal[100],
                           elevation: 4,
-                          margin: EdgeInsets.only(
+                          margin: const EdgeInsets.only(
                               top: 8, left: 20, right: 20, bottom: 8),
                           child: ListTile(
                             title: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(Provider.of<Data>(context)
+                                  .User
                                   .CaloriesSectionData
-                                  .UserMeals[index]
-                                  .name),
-                              padding: EdgeInsets.symmetric(horizontal: 10),
+                                  .getUserMeals[index]
+                                  .getName),
                             ),
-                            subtitle: Container(
+                            subtitle: FittedBox(
+                              alignment: Alignment.centerLeft,
+                              fit: BoxFit.scaleDown,
                               child: Text(
-                                  ' calories: ${Provider.of<Data>(context).CaloriesSectionData.UserMeals[index].calories} \t\t\t\t\t\t\t\t\t\t\t\t\t\t At ${Provider.of<Data>(context).CaloriesSectionData.UserMealsDates[index].toString().substring(0, 10)} '),
+                                ' calories: ${Provider.of<Data>(context).User.CaloriesSectionData.getUserMeals[index].getCalories} \t\t\t\t\t\t\t\t\t\t\t\t\t\t At ${Provider.of<Data>(context).User.CaloriesSectionData.getUserMealsDates[index].toString().substring(0, 10)} ',
+                                style: TextStyle(fontSize: 16),
+                              ),
                             ),
                             trailing: Container(
                               child: IconButton(
-                                icon: Icon(Icons.delete),
+                                icon: const Icon(Icons.delete),
                                 onPressed: (() {
                                   Provider.of<Data>(context, listen: false)
                                       .deletecalo(Provider.of<Data>(context,
                                               listen: false)
+                                          .User
                                           .CaloriesSectionData
-                                          .UserMeals[index]
-                                          .calories);
+                                          .getUserMeals[index]
+                                          .getCalories);
                                   Provider.of<Data>(context, listen: false)
                                       .DeleteUserMealsList(Provider.of<Data>(
                                               context,
                                               listen: false)
+                                          .User
                                           .CaloriesSectionData
-                                          .UserMeals[index]);
+                                          .getUserMeals[index]);
                                   Provider.of<Data>(context, listen: false)
                                       .deleteDate(Provider.of<Data>(context,
                                               listen: false)
+                                          .User
                                           .CaloriesSectionData
-                                          .UserMealsDates[index]);
+                                          .getUserMealsDates[index]);
                                   Provider.of<Data>(context, listen: false)
                                       .ChartKepUpDate();
                                   updateUser();
+                                  CheckNotifcation();
                                 }),
                               ),
                             ),
@@ -643,34 +649,46 @@ class UserMealsList extends State<MealsList> {
 
     if (!mounted) return;
 // _scanBarcode.substring(4)
-    List<String> Value = barcodeScanRes.split(" ");
-    Meals newMeal = new Meals(Value[0], int.parse(Value[1]));
-    Provider.of<Data>(context, listen: false).addUserMealsList(newMeal);
-    Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
-    Provider.of<Data>(context, listen: false)
-        .addDates(DateTime.now().toString());
-    Provider.of<Data>(context, listen: false).ChartKepUpDate();
-    updateUserMeals();
+    try {
+      List<String> Value = barcodeScanRes.split(" ");
+      Meals newMeal = Meals(Value[0], int.parse(Value[1]));
+      Provider.of<Data>(context, listen: false).addcalo(int.parse(Value[1]));
+      Provider.of<Data>(context, listen: false).addUserMealsList(newMeal);
+      Provider.of<Data>(context, listen: false)
+          .addDates(DateTime.now().toString());
+      Provider.of<Data>(context, listen: false).ChartKepUpDate();
+      updateUserMeals();
+    } catch (e) {
+      ShowErrorMessage(context, 'Error', 'Wrong QR Code', 75);
+    }
   }
 
   void updateUserMeals() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
         .doc(Provider.of<Data>(context, listen: false)
-            .CaloriesSectionData
-            .singedInUser
+            .User
+            .getSingedInUser
+            .currentUser!
             .email)
         .collection("Data");
     docUser.doc('CaloriesData').update({
       'calories': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .totalCalories,
+          .getTotalCalories,
       'mealsName': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .UserMealsNames,
+          .getUserMealsNames,
       'mealsCalories': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .UserMealsCalories,
+          .getUserMealsCalories,
+      'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .User
+          .CaloriesSectionData
+          .getUserMealsDates,
     });
   }
 }

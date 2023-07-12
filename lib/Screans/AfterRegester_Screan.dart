@@ -1,19 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:healthreminder1/models/ShowErrorMessage.dart';
 import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
-import 'Calories.dart';
-
-double Weight = 0;
-double Height = 0;
+late String Height;
+late String Weight;
 
 class AfterRegester_Screan extends StatefulWidget {
-  const AfterRegester_Screan({Key? key}) : super(key: key);
   static const String ScreanRoute = 'AfterRegester_Screan';
+  const AfterRegester_Screan({Key? key}) : super(key: key);
 
   @override
   State<AfterRegester_Screan> createState() => _AfterRegester_ScreanState();
@@ -47,18 +42,13 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                 TextField(
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                   onChanged: (value) {
-                    if (value == '' || value == null) {
-                      Weight = 0;
-                    }
-                    if (double.tryParse(value) != null) {
-                      Weight = double.parse(value);
-                    }
+                    Weight = value;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     fillColor: Colors.black,
-                    hintText: 'Enter Your Weight',
+                    hintText: 'Enter Your Weight (In Kg)',
                     hintStyle: TextStyle(color: Colors.white, fontSize: 18),
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -80,24 +70,19 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 TextField(
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                   onChanged: (value) {
-                    if (value == '' || value == null) {
-                      Height = 0;
-                    }
-                    if (double.tryParse(value) != null) {
-                      Height = double.parse(value);
-                    }
+                    Height = value;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     fillColor: Colors.black,
-                    hintText: 'Enter Your Height',
+                    hintText: 'Enter Your Height (In cm)',
                     hintStyle: TextStyle(color: Colors.white),
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -123,7 +108,7 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                   height: MediaQuery.of(context).size.height * 0.15,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Material(
                     elevation: 5,
                     color: Colors.white60,
@@ -131,37 +116,43 @@ class _AfterRegester_ScreanState extends State<AfterRegester_Screan> {
                     child: MaterialButton(
                       onPressed: () {
                         try {
-                          if (Weight == null || Weight <= 0) {
-                            ShowErrorMessage(
-                                context,
-                                'Wrong Weight Input',
-                                'Please Enter Your Weight make sure it\'s Positve Value',
-                                75);
-                            return;
-                          } else if (Height == null || Height <= 0) {
-                            ShowErrorMessage(
-                                context,
-                                'Wrong Height Input',
-                                'Please Enter Your Height make sure it\'s Positve Value',
-                                75);
-                            return;
+                          if (Height.isEmpty || Weight.isEmpty) {
+                            throw NullThrownError();
+                          }
+                          if (double.tryParse(Height) == null ||
+                              double.tryParse(Weight) == null) {
+                            throw FormatException;
                           }
 
                           Provider.of<Data>(context, listen: false)
-                              .CaloriesSectionData
-                              .Weight = Weight;
+                              .User
+                              .setWeight = double.parse(Weight);
                           Provider.of<Data>(context, listen: false)
-                              .CaloriesSectionData
-                              .Height = Height;
+                              .User
+                              .setHeight = double.parse(Height);
                           Provider.of<Data>(context, listen: false)
                               .UpdateWeightAndHeight();
                           Navigator.pushNamed(context, 'AllThree');
+                          Height = '';
+                          Height = '';
+                        } on NullThrownError {
+                          ShowErrorMessage(
+                              context,
+                              'Error',
+                              'Please Enter Your Weight and Height \nmake sure it\'s Positve Value',
+                              90);
+                        } on FormatException {
+                          ShowErrorMessage(
+                              context,
+                              'Wrong Height Or Weight Input',
+                              'Please make sure the Height or Weight Positve Value',
+                              90);
                         } catch (e) {
                           ShowErrorMessage(
                               context,
                               'Wrong Height and Weight Input',
                               'Please Enter Your Weight and Height as Numbers',
-                              75);
+                              90);
                         }
                       },
                       minWidth: 200,

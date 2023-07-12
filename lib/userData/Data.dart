@@ -1,259 +1,237 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:healthreminder1/ClassDiagram/WaterSection.dart';
+import 'package:healthreminder1/Screans/Welcome_Screan.dart';
+import 'package:healthreminder1/SleepSection/model/SleepRecord.dart';
 import 'package:healthreminder1/WaterSection/models/Water.dart';
 import 'package:healthreminder1/models/Meals.dart';
-import 'package:healthreminder1/models/chartData.dart';
-
-import '../ClassDiagram/CaloriesSection.dart';
+import '../ClassDiagram/User.dart';
 
 class Data extends ChangeNotifier {
-  WaterSection WaterSectionData = new WaterSection();
-  //Water Section Methods ////////////////////////////////////////////////////////
-  void AddWater(Water newWater) {
-    WaterSectionData.TotalWaterPortion =
-        WaterSectionData.TotalWaterPortion + newWater.amount;
-    WaterSectionData.UserWaterList.add(newWater);
-    WaterSectionData.WaterChart[0].type = WaterSectionData.TotalWaterPortion;
-    WaterSectionData.UserWaterListDates.add(newWater.date);
-    WaterSectionData.UserWaterListAmount.add(newWater.amount);
-    UpdateWaterData();
-    WaterChartKepUpDate();
-    notifyListeners();
-  }
+  user User = user();
 
-  void DeleteWater(Water newWater) {
-    WaterSectionData.TotalWaterPortion =
-        WaterSectionData.TotalWaterPortion - newWater.amount;
-    WaterSectionData.UserWaterList.remove(newWater);
-    WaterSectionData.WaterChart[0].type = WaterSectionData.TotalWaterPortion;
-    WaterSectionData.UserWaterListDates.remove(newWater.date);
-    WaterSectionData.UserWaterListAmount.remove(newWater.amount);
-    UpdateWaterData();
-    WaterChartKepUpDate();
-    notifyListeners();
-  }
-
-  void UpdateWaterTarget(dynamic NewTarget) {
-    WaterSectionData.WaterTarget = NewTarget;
-    WaterSectionData.chartWaterTarget = WaterSectionData.WaterTarget;
-    UpdateWaterData();
-    notifyListeners();
-  }
-
-  void UpdateWaterData() {
-    final docUser = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(CaloriesSectionData.singedInUser.email)
-        .collection("Data");
-    docUser.doc('WaterData').update({
-      'TotalWaterPortion': WaterSectionData.TotalWaterPortion,
-      'WaterTarget': WaterSectionData.WaterTarget,
-      'DatesUserWaterList': WaterSectionData.UserWaterListDates,
-      'UserWaterListAmount': WaterSectionData.UserWaterListAmount,
-    });
-  }
-
-  void SelectWaterDay(DateTime newDate, int newDayMultiplier) {
-    changeWaterListDate(newDate);
-    WaterSectionData.WaterdayTargetMultiplyer = newDayMultiplier;
-    WaterSectionData.chartWaterTarget = WaterSectionData.WaterTarget *
-        WaterSectionData.WaterdayTargetMultiplyer;
-    WaterChartKepUpDate();
-    notifyListeners();
-  }
-
-  void WaterChartKepUpDateAtFirst() async {
-    await Future.delayed(Duration(milliseconds: 400));
-
-    int tempTotalWater = 0;
-    for (var i = 0; i < WaterSectionData.UserWaterList.length; i++) {
-      if (WaterSectionData.WaterListDate.day <=
-          DateTime.parse(WaterSectionData.UserWaterList[i].date).day) {
-        tempTotalWater =
-            tempTotalWater + WaterSectionData.UserWaterList[i].amount as int;
-      }
-    }
-
-    newWaterChart(tempTotalWater);
-    notifyListeners();
-  }
-
-  void WaterChartKepUpDate() {
-    int tempTotalWater = 0;
-    for (var i = 0; i < WaterSectionData.UserWaterList.length; i++) {
-      if (WaterSectionData.WaterListDate.day <=
-          DateTime.parse(WaterSectionData.UserWaterList[i].date).day) {
-        tempTotalWater =
-            tempTotalWater + WaterSectionData.UserWaterList[i].amount as int;
-      }
-    }
-
-    newWaterChart(tempTotalWater);
-  }
-
-  void newWaterChart(int newWaterChart) {
-    WaterSectionData.WaterChart[0].type = newWaterChart;
-    notifyListeners();
-  }
-
-  void changeWaterListDate(DateTime newListDate) {
-    WaterSectionData.WaterListDate = newListDate;
-    notifyListeners();
-  }
-
-  //Calorie Section Methods ////////////////////////////////////////////////////////
-  CaloriesSection CaloriesSectionData = CaloriesSection();
+//Calorie Section Methods ////////////////////////////////////////////////////////
   void addcalo(int newcal) {
-    CaloriesSectionData.totalCalories =
-        CaloriesSectionData.totalCalories + newcal;
+    User.CaloriesSectionData.addcalo(newcal);
     notifyListeners();
   }
 
-  void newCaloChart(int newCaloChart) {
-    CaloriesSectionData.CaloriesChart[0].type = newCaloChart;
+  void addDates(String date) {
+    User.CaloriesSectionData.getUserMealsDates.add(date);
+    notifyListeners();
+  }
+
+  void addUserMealsList(Meals newMeal) {
+    User.CaloriesSectionData.addUserMealsList(newMeal);
+    notifyListeners();
+  }
+
+  void changeListDate(DateTime newListDate) {
+    User.CaloriesSectionData.changeListDate(newListDate);
+    notifyListeners();
+  }
+
+  void ChartKepUpDate() {
+    User.CaloriesSectionData.ChartKepUpDate();
+    notifyListeners();
+  }
+
+  void ChartKepUpDateAtFirst() {
+    User.CaloriesSectionData.ChartKepUpDateAtFirst();
     notifyListeners();
   }
 
   void deletecalo(int newcal) {
-    CaloriesSectionData.totalCalories =
-        CaloriesSectionData.totalCalories - newcal;
-    CaloriesSectionData.CaloriesChart[0].type =
-        CaloriesSectionData.totalCalories;
+    User.CaloriesSectionData.deletecalo(newcal);
+    notifyListeners();
+  }
+
+  void deleteDate(String date) {
+    User.CaloriesSectionData.deleteDate(date);
+    notifyListeners();
+  }
+
+  void DeleteUserMealsList(Meals newMeal) {
+    User.CaloriesSectionData.DeleteUserMealsList(newMeal);
+    notifyListeners();
+  }
+
+  void ListAtFirst() {
+    User.CaloriesSectionData.ListAtFirst();
+    notifyListeners();
+  }
+
+  void newCaloChart(int newCaloChart) {
+    User.CaloriesSectionData.newCaloChart(newCaloChart);
+    notifyListeners();
+  }
+
+  void updateCaloBurningTarget(var newTarget) {
+    User.CaloriesSectionData.updateCaloBurningTarget(newTarget);
+    notifyListeners();
+  }
+
+  void updateCaloTarget(var newTarget) {
+    User.CaloriesSectionData.updateCaloTarget(newTarget);
     notifyListeners();
   }
 
   void updateSteps(dynamic newSteps) async {
-    if (newSteps != CaloriesSectionData.steps) {
-      CaloriesSectionData.steps = newSteps;
-      CaloriesSectionData.StepsChart[0].type = CaloriesSectionData.steps;
-      await Future.delayed(Duration(microseconds: 150));
+    if (newSteps != User.CaloriesSectionData.getSteps) {
+      User.CaloriesSectionData.setSteps = newSteps;
+      User.CaloriesSectionData.getStepsChart[0].setValue =
+          User.CaloriesSectionData.getSteps;
+      await Future.delayed(const Duration(microseconds: 150));
       // ChartData[1].type = steps;
       notifyListeners();
     }
   }
 
-  void addUserMealsList(Meals newMeal) {
-    CaloriesSectionData.UserMeals.add(newMeal);
-    CaloriesSectionData.UserMealsNames.add(newMeal.name);
-    CaloriesSectionData.UserMealsCalories.add(newMeal.calories);
-    notifyListeners();
-  }
-
-  void DeleteUserMealsList(Meals newMeal) {
-    CaloriesSectionData.UserMeals.remove(newMeal);
-    CaloriesSectionData.UserMealsNames.remove(newMeal.name);
-    CaloriesSectionData.UserMealsCalories.remove(newMeal.calories);
-    notifyListeners();
-  }
-
-  void updateCaloTarget(var newTarget) {
-    CaloriesSectionData.TargetCalories = newTarget;
-    CaloriesSectionData.chartTargetCalories =
-        CaloriesSectionData.TargetCalories *
-            CaloriesSectionData.dayTargetMultiplyer;
-    notifyListeners();
-  }
-
   void updateStepsTarget(var newTarget) {
-    CaloriesSectionData.TargetSteps = newTarget;
-    CaloriesSectionData.chartTargetSteps = CaloriesSectionData.TargetSteps *
-        CaloriesSectionData.dayTargetMultiplyer;
+    User.CaloriesSectionData.updateStepsTarget(newTarget);
     notifyListeners();
-  }
-
-  void updateCaloBurningTarget(var newTarget) {
-    CaloriesSectionData.TargetCaloriesBurning = newTarget;
-    CaloriesSectionData.chartTargetCaloriesBurning =
-        CaloriesSectionData.TargetCaloriesBurning *
-            CaloriesSectionData.dayTargetMultiplyer;
-    notifyListeners();
-  }
-
-  void addDates(String date) {
-    CaloriesSectionData.UserMealsDates.add(date);
-    notifyListeners();
-  }
-
-  void deleteDate(String date) {
-    CaloriesSectionData.UserMealsDates.remove(date);
-    notifyListeners();
-  }
-
-  void updateUser() {
-    final docUser = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(CaloriesSectionData.singedInUser.email)
-        .collection("Data");
-    docUser.doc('CaloriesData').update({
-      'calories': CaloriesSectionData.totalCalories,
-      'mealsName': CaloriesSectionData.UserMealsNames,
-      'mealsCalories': CaloriesSectionData.UserMealsCalories,
-      'dateOfTheDay': CaloriesSectionData.UserMealsDates,
-    });
-  }
-
-  void changeListDate(DateTime newListDate) {
-    CaloriesSectionData.ListDate = newListDate;
-    notifyListeners();
-  }
-
-  void ChartKepUpDateAtFirst() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-
-    int tempTotalCalories = 0;
-    for (var i = 0; i < CaloriesSectionData.UserMealsCalories.length; i++) {
-      if (CaloriesSectionData.ListDate.day <=
-          DateTime.parse(CaloriesSectionData.UserMealsDates[i]).day) {
-        tempTotalCalories =
-            tempTotalCalories + CaloriesSectionData.UserMealsCalories[i] as int;
-      }
-    }
-
-    newCaloChart(tempTotalCalories);
-  }
-
-  void ChartKepUpDate() {
-    int tempTotalCalories = 0;
-    for (var i = 0; i < CaloriesSectionData.UserMealsCalories.length; i++) {
-      if (CaloriesSectionData.ListDate.day <=
-          DateTime.parse(CaloriesSectionData.UserMealsDates[i]).day) {
-        tempTotalCalories =
-            tempTotalCalories + CaloriesSectionData.UserMealsCalories[i] as int;
-      }
-    }
-
-    newCaloChart(tempTotalCalories);
   }
 
   void UpdateWeightAndHeight() {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
-        .doc(CaloriesSectionData.singedInUser.email)
+        .doc(User.getSingedInUser.currentUser!.email)
         .collection("Data");
     docUser.doc('CaloriesData').update({
-      'Weight': CaloriesSectionData.Weight,
-      'Height': CaloriesSectionData.Height,
+      'Weight': User.getWeight,
+      'Height': User.getHeight,
     });
   }
 
-  void ListAtFirst() {
-    changeListDate(DateTime.now());
+  void CalculateCaloriesBurnt(dynamic Height, dynamic Weight) async {
+    await Future.delayed(Duration(milliseconds: 1));
+    User.CaloriesSectionData.CalculateCaloriesBurnt(Height, Weight);
+    notifyListeners();
+  }
 
-    ChartKepUpDate();
-    CaloriesSectionData.dayTargetMultiplyer = 1;
+  //Sleep Section Methods ////////////////////////////////////////////////////////
 
-    CaloriesSectionData.chartTargetCalories =
-        CaloriesSectionData.TargetCalories;
+  String BedTimeAnalysis() {
+    return User.sleepsection.BedTimeAnalysis();
+  }
 
-    CaloriesSectionData.dayTargetMultiplyer = 1;
+  String getDateFormated(int index) {
+    return User.sleepsection.getDateFormated(index);
+  }
 
-    CaloriesSectionData.chartTargetSteps = CaloriesSectionData.TargetSteps;
+  String getDateFormatedDay() {
+    return User.sleepsection.getDateFormatedDay();
+  }
 
-    CaloriesSectionData.chartTargetCaloriesBurning =
-        CaloriesSectionData.TargetCaloriesBurning;
+  String getDateFormatedhours() {
+    return User.sleepsection.getDateFormatedhours();
+  }
+
+  String SleepDurationAnalysis() {
+    return User.sleepsection.SleepDurationAnalysis();
+  }
+
+  void UpdateSleepData() {
+    User.sleepsection.UpdateSleepData(User.getSingedInUser.currentUser!.email!);
+  }
+
+  Future AddSleepRecord(SleepRecord SleepRecord) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    User.sleepsection.getSleepRecords.add(SleepRecord);
+    User.sleepsection.getSleepDurationList.add(SleepRecord.getSleepDuration);
+    User.sleepsection.getSleepDateList.add(SleepRecord.getSleepDate);
+    User.sleepsection.getTargetOfDayList.add(SleepRecord.getTargetOfDay);
+    UpdateSleepData();
+    notifyListeners();
+  }
+
+  //WaterSection Methods
+
+  void AddWater(Water newWater) {
+    User.WaterSectionData.AddWater(
+        newWater, User.getSingedInUser.currentUser!.email!);
+    notifyListeners();
+  }
+
+  void DeleteWater(Water newWater) {
+    User.WaterSectionData.setTotalWaterPortion =
+        User.WaterSectionData.getTotalWaterPortion - newWater.getAmount;
+    User.WaterSectionData.getUserWaterList.remove(newWater);
+    User.WaterSectionData.getWaterChart[0].setValue =
+        User.WaterSectionData.getTotalWaterPortion;
+    User.WaterSectionData.getUserWaterListDates.remove(newWater.getDate);
+    User.WaterSectionData.getUserWaterListAmount.remove(newWater.getAmount);
+    UpdateWaterData();
+    WaterChartKepUpDate();
+    notifyListeners();
+  }
+
+  void changeWaterListDate(DateTime newListDate) {
+    User.WaterSectionData.changeWaterListDate(newListDate);
+    notifyListeners();
+  }
+
+  void newWaterChart(int newWaterChart) {
+    User.WaterSectionData.newWaterChart(newWaterChart);
+    notifyListeners();
+  }
+
+  void SelectWaterDay(DateTime newDate, int newDayMultiplier) {
+    User.WaterSectionData.SelectWaterDay(newDate, newDayMultiplier);
+    notifyListeners();
+  }
+
+  void UpdateWaterData() {
+    User.WaterSectionData.UpdateWaterData(
+        User.getSingedInUser.currentUser!.email!);
+  }
+
+  void UpdateWaterTarget(dynamic NewTarget) {
+    User.WaterSectionData.UpdateWaterTarget(
+        NewTarget, User.getSingedInUser.currentUser!.email!);
+    notifyListeners();
+  }
+
+  void WaterChartKepUpDate() {
+    User.WaterSectionData.WaterChartKepUpDate();
+  }
+
+  void WaterChartKepUpDateAtFirst() async {
+    await Future.delayed(const Duration(milliseconds: 10));
+
+    int tempTotalWater = 0;
+    for (var i = 0; i < User.WaterSectionData.getUserWaterList.length; i++) {
+      if (User.WaterSectionData.getWaterListDate.day <=
+          DateTime.parse(User.WaterSectionData.getUserWaterList[i].getDate)
+              .day) {
+        tempTotalWater = tempTotalWater +
+            User.WaterSectionData.getUserWaterList[i].getAmount as int;
+      }
+    }
+    newWaterChart(tempTotalWater);
+    notifyListeners();
+  }
+
+  //SginOut
+  void userLogout(context) {
+    FirebaseAuth sginout = FirebaseAuth.instance;
+    User.CaloriesSectionData.sginOut();
+    User.WaterSectionData.sginOut();
+    User.sleepsection.sginOut();
+    User.setSingedInUser = sginout;
+    Navigator.pushNamed(context, WelcomeScrean.ScreanRoute);
+  }
+
+  void notifyListener() {
+    notifyListeners();
+  }
+
+//Get User Data From FireBaseAuth
+  void getCurrentUser() {
+    final _auth = FirebaseAuth.instance;
+
+    if (_auth != null) {
+      User.setSingedInUser = _auth;
+    }
   }
 }

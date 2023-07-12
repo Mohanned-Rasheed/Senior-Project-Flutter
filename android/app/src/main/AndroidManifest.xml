@@ -2,7 +2,7 @@
     package="com.example.healthreminder1">
     
    <application
-        android:label="healthreminder1"
+        android:label="Healthy Reminder"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

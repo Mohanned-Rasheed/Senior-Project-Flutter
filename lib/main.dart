@@ -3,13 +3,14 @@ import 'package:healthreminder1/Screans/AfterRegester_Screan.dart';
 import 'package:healthreminder1/Screans/ChatBotSuggestion.dart';
 import 'package:healthreminder1/Screans/Register_Screan.dart';
 import 'package:healthreminder1/Screans/Sginin_Screan.dart';
-import 'package:healthreminder1/Screans/Sleep.dart';
-import 'package:healthreminder1/WaterSection/WaterScrean.dart';
+import 'package:healthreminder1/SleepSection/Screans/SleepScrean.dart';
+import 'package:healthreminder1/SleepSection/Screans/DetailedRecordChart.dart';
+import 'package:healthreminder1/WaterSection/Screans/WaterScrean.dart';
 import 'package:healthreminder1/Screans/Welcome_Screan.dart';
-import 'Screans/Calories.dart';
+import 'package:healthreminder1/models/ShowErrorMessage.dart';
+import 'Screans/CaloriesScrean.dart';
 import 'package:provider/provider.dart';
 import 'userData/Data.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -20,6 +21,8 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() {
     return _MyAppState();
@@ -35,10 +38,10 @@ class _MyAppState extends State<MyApp> {
     Center(
       child: CaloriesSection(),
     ),
-    Center(
+    const Center(
       child: WaterSection(),
     ),
-    Center(
+    const Center(
       child: SleepSection(),
     )
   ];
@@ -55,9 +58,11 @@ class _MyAppState extends State<MyApp> {
           Sginin_Screan.ScreeanRoute: (context) => Sginin_Screan(),
           Register_Screan.ScreanRoute: (context) => Register_Screan(),
           'AllThree': (context) => AllThree(),
-          ChatSuggetion.ScreanRoute: (context) => MyWidget(),
-          AfterRegester_Screan.ScreanRoute: (context) => AfterRegester_Screan(),
+          ChatSuggetion.ScreanRoute: (context) => const MyWidget(),
+          AfterRegester_Screan.ScreanRoute: (context) =>
+              const AfterRegester_Screan(),
           CaloriesSection.ScreanRoute: (context) => CaloriesSection(),
+          DetailedRecord.ScreanRoute: (context) => const DetailedRecord(),
         },
       ),
     );
@@ -68,8 +73,9 @@ class _MyAppState extends State<MyApp> {
       future: _fbApp,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print("you have an error! ${snapshot.error.toString()}");
-          return Text('Something went wrong');
+          ShowErrorMessage(context,
+              "you have an error! ${snapshot.error.toString()}", '', 100);
+          return const Text('Something went wrong');
         } else if (snapshot.hasData) {
           return Scaffold(
             body: pages[index],
@@ -80,27 +86,27 @@ class _MyAppState extends State<MyApp> {
                 this.index = index;
               }),
               height: 60,
-              destinations: [
+              destinations: const [
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.fastfood_rounded),
+                  selectedIcon: Icon(Icons.fastfood_rounded),
                   label: 'CaloriesSection',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.water_drop_outlined),
+                  selectedIcon: Icon(Icons.water_drop_outlined),
                   label: 'WaterSection',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.airline_seat_individual_suite_sharp),
+                  selectedIcon: Icon(Icons.airline_seat_individual_suite_sharp),
                   label: 'SleepSection',
                 ),
               ],
             ),
           );
         } else {
-          return Scaffold(
+          return const Scaffold(
               body: Center(
             child: CircularProgressIndicator(),
           ));

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthreminder1/models/Meals.dart';
-import '../userData/Data.dart';
+import 'package:healthreminder1/userData/Data.dart';
 import 'package:provider/provider.dart';
 
 class Addcalories extends StatefulWidget {
@@ -16,30 +16,35 @@ class _AddcaloriesState extends State<Addcalories> {
     final docUser = FirebaseFirestore.instance
         .collection('Users')
         .doc(Provider.of<Data>(context, listen: false)
-            .CaloriesSectionData
-            .singedInUser
+            .User
+            .getSingedInUser
+            .currentUser!
             .email)
         .collection("Data");
     docUser.doc('CaloriesData').update({
       'calories': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .totalCalories,
+          .getTotalCalories,
       'mealsName': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .UserMealsNames,
+          .getUserMealsNames,
       'mealsCalories': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .UserMealsCalories,
+          .getUserMealsCalories,
       'dateOfTheDay': Provider.of<Data>(context, listen: false)
+          .User
           .CaloriesSectionData
-          .UserMealsDates,
+          .getUserMealsDates,
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(30),
+      padding: const EdgeInsets.all(30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -59,13 +64,13 @@ class _AddcaloriesState extends State<Addcalories> {
               addedcalories = int.parse(newcal);
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           TextButton(
             onPressed: () {
               try {
-                Meals newMeal = new Meals('Added Calories', addedcalories);
+                Meals newMeal = Meals('Added Calories', addedcalories);
                 newMeal.MealsWithDate(
                     'Added Calories', addedcalories, DateTime.now());
                 Provider.of<Data>(context, listen: false)
@@ -82,9 +87,11 @@ class _AddcaloriesState extends State<Addcalories> {
 
               Navigator.pop(context);
             },
-            child: Text('Add'),
             style: TextButton.styleFrom(
-                backgroundColor: Colors.teal[300], primary: Colors.white),
+              backgroundColor: Colors.teal[300],
+            ),
+            // primary: Colors.white
+            child: const Text('Add'),
           )
         ],
       ),

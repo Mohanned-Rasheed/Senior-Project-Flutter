@@ -5,7 +5,7 @@ class notification {
       FlutterLocalNotificationsPlugin();
 
   final AndroidInitializationSettings _androidNotification =
-      AndroidInitializationSettings('logo');
+      const AndroidInitializationSettings('logo');
 
   void initialiseNotifications() async {
     InitializationSettings initializationSettings =
@@ -14,7 +14,7 @@ class notification {
     _notification.initialize(initializationSettings);
   }
 
-  void sendNotification(String title, String body) async {
+  void sendNotification(String title, String body, int section) async {
     AndroidNotificationDetails androidNotificationDetails =
         const AndroidNotificationDetails('channelId', 'ChannelName',
             importance: Importance.max, priority: Priority.high);
@@ -22,6 +22,8 @@ class notification {
     NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
-    await _notification.show(0, title, body, notificationDetails);
+    //await _notification.show(0, title, body, notificationDetails);
+    await _notification.periodicallyShow(
+        section, title, body, RepeatInterval.hourly, notificationDetails);
   }
 }

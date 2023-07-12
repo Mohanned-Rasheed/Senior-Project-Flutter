@@ -54,7 +54,9 @@ class _ChangeWaterTargetState extends State<ChangeWaterTarget> {
             },
             child: Text('Change'),
             style: TextButton.styleFrom(
-                backgroundColor: Colors.teal[300], primary: Colors.white),
+              backgroundColor: Colors.teal[300],
+            ),
+            // primary: Colors.white
           )
         ],
       ),
